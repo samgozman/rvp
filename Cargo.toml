@@ -13,3 +13,4 @@ rust-version = "1.68.0"
 include = ["src/**/*", "LICENSE", "README.md"]
 
 [dependencies]
+clap = { version = "4.1.8", features = ["derive"] }
