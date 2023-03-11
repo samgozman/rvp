@@ -1,0 +1,15 @@
+[package]
+name = "rvp"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/samgozman/rvp"
+repository = "https://github.com/samgozman/rvp"
+authors = ["Sam Gozman <sam@gozman.space>"]
+description = "Remote Value Parser - CLI tool for parsing string values from static web pages"
+keywords = ["rvp", "parser", "cli"]
+rust-version = "1.68.0"
+include = ["src/**/*", "LICENSE", "README.md"]
+
+[dependencies]
