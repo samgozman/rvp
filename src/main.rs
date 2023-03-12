@@ -1,8 +1,15 @@
+mod commands;
+use commands::*;
+
+#[macro_use]
+mod macros;
+use anyhow::Result;
+
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[clap(author, version, about, long_about = None)]
 struct Cli {
     /// Optional name to operate on
     name: Option<String>,
@@ -12,20 +19,14 @@ struct Cli {
     config: Option<PathBuf>,
 
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
-#[derive(Subcommand)]
-enum Commands {
-    /// does testing things
-    Test {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
-    },
-}
+// Specify the command modules to be included in the CLI
+commands_builder!(test);
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     if let Some(name) = cli.name.as_deref() {
@@ -36,14 +37,6 @@ fn main() {
         println!("Value for config: {}", config_path.display());
     }
 
-    match &cli.command {
-        Some(Commands::Test { list }) => {
-            if *list {
-                println!("Printing testing lists...");
-            } else {
-                println!("Not printing testing lists...");
-            }
-        }
-        None => {}
-    }
+    Commands::exec(cli).await?;
+    Ok(())
 }
