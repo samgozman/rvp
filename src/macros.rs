@@ -1,12 +1,12 @@
 #[macro_export]
-/// Generates the CLI commands based on the modules in the /commands directory.
+/// Generates `Commands` enum based on the modules in the /commands directory.
 ///
 /// The macro takes a list of modules as arguments, and generates an enum with
-/// variants for each module. The enum is then used to match the subcommand
+/// arguments for each module. The enum is then used to match the subcommand
 /// passed to the CLI.
 macro_rules! commands_builder {
     ($($module:ident),*) => (
-      // paste! is used to generate non-existent identifiers, in this case the enum variants
+      // `paste!` is used to generate non-existent identifiers for enum, in this case the enum elements
       // which should represent the modules in the /commands directory.
       paste::paste! {
         #[derive(Subcommand)]
