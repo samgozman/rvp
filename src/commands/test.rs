@@ -18,3 +18,15 @@ pub async fn command(args: Args) -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_command() -> Result<()> {
+        let args = Args { list: true };
+        command(args).await?;
+        Ok(())
+    }
+}
