@@ -3,6 +3,8 @@ use clap::Parser;
 
 use validator::Validate;
 
+use crate::scalper;
+
 /// Simply grab one value from a web page.
 #[derive(Parser, Validate)]
 pub struct Args {
@@ -27,9 +29,9 @@ pub struct Args {
 pub async fn command(args: Args) -> Result<()> {
     args.validate()?;
 
-    println!("Grab command");
-    println!("Selector: {}", args.selector);
-    println!("From: {}", args.from);
+    let value = scalper::lib::grab_one(&args.selector, &args.from).await?;
+
+    println!("{}", value);
     Ok(())
 }
 
@@ -40,8 +42,8 @@ mod tests {
     #[tokio::test]
     async fn test_command() -> Result<()> {
         let args = Args {
-            selector: "#search > div".to_string(),
-            from: "https://example.com".to_string(),
+            selector: "body > div > h1".to_string(),
+            from: "http://example.com".to_string(),
         };
         command(args).await
     }
@@ -52,7 +54,9 @@ mod tests {
             selector: "#search > div".to_string(),
             from: "invalid-url".to_string(),
         };
-        command(args).await.expect_err("should fail with invalid URL!");
+        command(args)
+            .await
+            .expect_err("should fail with invalid URL!");
         Ok(())
     }
 
@@ -60,9 +64,11 @@ mod tests {
     async fn test_command_with_empty_selector() -> Result<()> {
         let args = Args {
             selector: "".to_string(),
-            from: "https://example.com".to_string(),
+            from: "http://example.com".to_string(),
         };
-        command(args).await.expect_err("should fail with empty selector!");
+        command(args)
+            .await
+            .expect_err("should fail with empty selector!");
         Ok(())
     }
 }

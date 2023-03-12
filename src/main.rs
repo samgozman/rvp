@@ -1,4 +1,5 @@
 mod commands;
+mod scalper;
 use commands::*;
 
 #[macro_use]
