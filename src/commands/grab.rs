@@ -29,7 +29,7 @@ pub struct Args {
 pub async fn command(args: Args) -> Result<()> {
     args.validate()?;
 
-    let value = scalper::lib::grab_one(&args.selector, &args.from).await?;
+    let value = scalper::grab_one(&args.selector, &args.from).await?;
 
     println!("{}", value);
     Ok(())
