@@ -58,3 +58,50 @@ fn parse_value(document: &Html, selector: &Selector) -> Result<String> {
 
     Ok(element.text().collect::<Vec<_>>().join(" "))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_fetch_html() -> Result<()> {
+        let document = fetch_html("http://example.com").await?;
+        assert!(document
+            .select(&Selector::parse("body").unwrap())
+            .next()
+            .is_some());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_fetch_html_with_invalid_url() -> Result<()> {
+        fetch_html("invalid-url")
+            .await
+            .expect_err("should fail with invalid URL!");
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_parse_value() -> Result<()> {
+        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
+        let selector = Selector::parse("h1").unwrap();
+        let value = parse_value(&document, &selector)?;
+        assert_eq!(value, "Example");
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_parse_value_with_invalid_selector() -> Result<()> {
+        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
+        let selector = Selector::parse("h2").unwrap();
+        parse_value(&document, &selector).expect_err("should fail with invalid selector!");
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab_one() -> Result<()> {
+        let value = grab_one("body > div > h1", "http://example.com").await?;
+        assert_eq!(value, "Example Domain");
+        Ok(())
+    }
+}
