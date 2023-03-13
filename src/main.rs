@@ -17,7 +17,7 @@ struct Cli {
 }
 
 // Specify the command modules to be included in the CLI
-commands_builder!(grab);
+commands_builder!(grab, new);
 
 #[tokio::main]
 async fn main() -> Result<()> {
