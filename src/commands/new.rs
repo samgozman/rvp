@@ -14,26 +14,20 @@ pub struct Args {
 }
 
 pub async fn command(args: Args) -> Result<()> {
-    println!(
-        "Creating new config file {}.toml",
-        args.name.unwrap_or("default".to_string())
-    );
+    let name = args.name.unwrap_or("default".to_string());
+    println!("Creating new config file {}.toml", name);
 
-    let url = Text::new("Site URL:")
-        .with_validator(required!("This field is required"))
-        .with_help_message("http://example.com")
+    let description = Text::new("Config description:")
+        .with_help_message("(Optional) Create a helpful description for this config file")
+        .with_default("")
         .prompt()?;
 
-    println!("Now you need to add some selectors to grab from the page:");
+    let resources = add_resource()?;
 
-    let selectors = add_selectors()?;
+    let config = Config::new(name, description, resources);
 
-    // TODO: Add outer loop to add more websites and selectors
+    println!("Done! Don't worry, you can edit the config file later.");
 
-    println!("URL: {}", url);
-    selectors
-        .iter()
-        .for_each(|s| println!("{}: {}", s.name, s.path));
     Ok(())
 }
 
@@ -63,6 +57,33 @@ fn add_selectors() -> Result<Vec<Selector>> {
     Ok(selectors)
 }
 
+fn add_resource() -> Result<Vec<Resource>> {
+    let mut resources: Vec<Resource> = Vec::new();
+
+    'resource_loop: loop {
+        let url = Text::new("Site URL:")
+            .with_validator(required!("This field is required"))
+            .with_help_message("http://example.com")
+            .prompt()?;
+        let selectors = add_selectors()?;
+
+        resources.push(Resource::new(url, selectors));
+
+        let add_another = Confirm::new("Add another resource?")
+            .with_default(false)
+            .prompt()?;
+
+        if !add_another {
+            break 'resource_loop;
+        }
+    }
+
+    Ok(resources)
+}
+
+// TODO: Move these structs to a separate file, implement some methods (like 'add', 'remove', 'list', etc.)
+
+/// A selector is named a path to a value on a web page
 struct Selector {
     path: String,
     name: String,
@@ -71,5 +92,34 @@ struct Selector {
 impl Selector {
     fn new(path: String, name: String) -> Self {
         Self { path, name }
+    }
+}
+
+// A resource is a website with a list of selectors
+struct Resource {
+    url: String,
+    selectors: Vec<Selector>,
+}
+
+impl Resource {
+    fn new(url: String, selectors: Vec<Selector>) -> Self {
+        Self { url, selectors }
+    }
+}
+
+// A config is a list of resources
+struct Config {
+    name: String,
+    description: String,
+    resources: Vec<Resource>,
+}
+
+impl Config {
+    fn new(name: String, description: String, resources: Vec<Resource>) -> Self {
+        Self {
+            name,
+            description,
+            resources,
+        }
     }
 }
