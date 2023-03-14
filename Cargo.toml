@@ -21,3 +21,5 @@ validator = { version = "0.16.0", features = ["derive"] }
 reqwest = "0.11.14"
 scraper = "0.15.0"
 inquire = "0.6.0"
+serde = { version = "1.0.155", features = ["derive"] }
+toml = "0.7.2"

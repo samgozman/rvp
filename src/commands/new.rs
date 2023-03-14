@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
+use serde::Serialize;
 
 use inquire::{required, Confirm, Text};
 
@@ -26,6 +27,10 @@ pub async fn command(args: Args) -> Result<()> {
 
     let config = Config::new(name, description, resources);
 
+    let toml = toml::to_string(&config).unwrap();
+    // TODO: Write to file
+    println!("{}", toml);
+
     println!("Done! Don't worry, you can edit the config file later.");
 
     Ok(())
@@ -40,7 +45,7 @@ fn add_selectors() -> Result<Vec<Selector>> {
             .with_validator(required!("This field is required"))
             .with_help_message("body > div > h1")
             .prompt()?;
-        let name = Text::new("Name:")
+        let name = Text::new("Selector name:")
             .with_validator(required!("This field is required"))
             .with_help_message("Title")
             .prompt()?;
@@ -71,6 +76,8 @@ fn add_resource() -> Result<Vec<Resource>> {
 
         resources.push(Resource::new(url, selectors));
 
+        println!("New Resource added!");
+
         let add_another = Confirm::new("Add another Resource?")
             .with_default(false)
             .prompt()?;
@@ -86,6 +93,7 @@ fn add_resource() -> Result<Vec<Resource>> {
 // TODO: Move these structs to a separate file, implement some methods (like 'add', 'remove', 'list', etc.)
 
 /// A selector is named a path to a value on a web page
+#[derive(Serialize)]
 struct Selector {
     path: String,
     name: String,
@@ -98,6 +106,7 @@ impl Selector {
 }
 
 // A resource is a website with a list of selectors
+#[derive(Serialize)]
 struct Resource {
     url: String,
     selectors: Vec<Selector>,
@@ -110,6 +119,7 @@ impl Resource {
 }
 
 // A config is a list of resources
+#[derive(Serialize)]
 struct Config {
     name: String,
     description: String,
