@@ -31,6 +31,7 @@ pub async fn command(args: Args) -> Result<()> {
     Ok(())
 }
 
+/// Create list of selectors from user input
 fn add_selectors() -> Result<Vec<Selector>> {
     let mut selectors: Vec<Selector> = Vec::new();
 
@@ -45,7 +46,7 @@ fn add_selectors() -> Result<Vec<Selector>> {
             .prompt()?;
         selectors.push(Selector::new(path, name));
 
-        let add_another = Confirm::new("Add another selector?")
+        let add_another = Confirm::new("Add another Selector?")
             .with_default(false)
             .prompt()?;
 
@@ -57,6 +58,7 @@ fn add_selectors() -> Result<Vec<Selector>> {
     Ok(selectors)
 }
 
+/// Create list of resources from user input
 fn add_resource() -> Result<Vec<Resource>> {
     let mut resources: Vec<Resource> = Vec::new();
 
@@ -69,7 +71,7 @@ fn add_resource() -> Result<Vec<Resource>> {
 
         resources.push(Resource::new(url, selectors));
 
-        let add_another = Confirm::new("Add another resource?")
+        let add_another = Confirm::new("Add another Resource?")
             .with_default(false)
             .prompt()?;
 
