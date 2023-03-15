@@ -1,4 +1,4 @@
-use crate::structure::{Config, Resource, Selector, ConfigFormat};
+use crate::structure::{Config, ConfigFormat, Resource, Selector};
 use anyhow::Result;
 use clap::Parser;
 
@@ -28,8 +28,11 @@ pub async fn command(args: Args) -> Result<()> {
 
     let config = Config::new(name, description, resources);
 
-    config.save(ConfigFormat::TOML)?;
+    // todo: check if file exists before saving it
 
+    let path = config.save(ConfigFormat::TOML)?;
+
+    println!("Config file saved to {}", path.display());
     println!("Done! Don't worry, you can edit the config file later.");
 
     Ok(())
@@ -67,6 +70,7 @@ fn add_resource() -> Result<Vec<Resource>> {
     let mut resources: Vec<Resource> = Vec::new();
 
     'resource_loop: loop {
+        // TODO: Add URL validation
         let url = Text::new("Site URL:")
             .with_validator(required!("This field is required"))
             .with_help_message("http://example.com")

@@ -1,7 +1,10 @@
 /// This file contains the structure of the config file.
 /// It is used to create and serialize the config file.
 use serde::Serialize;
-use std::{env, path::Path};
+use std::{
+    env,
+    path::{Path, PathBuf},
+};
 
 pub enum ConfigFormat {
     TOML,
@@ -54,7 +57,16 @@ impl Config {
         }
     }
 
-    pub fn save(&self, cf: ConfigFormat) -> Result<(), std::io::Error> {
+/// Saves the [Config] structure to a file with the given name and specified format.
+/// 
+/// Arguments:
+/// 
+/// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+/// 
+/// Returns:
+/// 
+/// A path to the saved config [Result<PathBuf, std::io::Error>]
+    pub fn save(&self, cf: ConfigFormat) -> Result<PathBuf, std::io::Error> {
         let data: String;
         let file_name: String;
         match cf {
@@ -68,11 +80,10 @@ impl Config {
             }
         };
 
-        std::fs::write(
-            Path::new(&env::current_dir().unwrap()).join(&file_name),
-            data,
-        )?;
-        Ok(())
+        let full_path = Path::new(&env::current_dir().unwrap()).join(&file_name);
+        std::fs::write(full_path.clone(), data)?;
+
+        Ok(full_path)
     }
 
     /// Convert config to TOML string
