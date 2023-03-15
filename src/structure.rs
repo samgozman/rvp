@@ -1,6 +1,12 @@
 /// This file contains the structure of the config file.
 /// It is used to create and serialize the config file.
 use serde::Serialize;
+use std::{env, path::Path};
+
+pub enum ConfigFormat {
+    TOML,
+    JSON,
+}
 
 /// A selector is named a path to a value on a web page
 #[derive(Serialize)]
@@ -48,8 +54,29 @@ impl Config {
         }
     }
 
+    pub fn save(&self, cf: ConfigFormat) -> Result<(), std::io::Error> {
+        let data: String;
+        let file_name: String;
+        match cf {
+            ConfigFormat::TOML => {
+                data = self.to_toml();
+                file_name = format!("{}.toml", self.name);
+            }
+            ConfigFormat::JSON => {
+                data = "".to_string(); // TODO: Implement JSON
+                file_name = format!("{}.json", self.name);
+            }
+        };
+
+        std::fs::write(
+            Path::new(&env::current_dir().unwrap()).join(&file_name),
+            data,
+        )?;
+        Ok(())
+    }
+
     /// Convert config to TOML string
-    pub fn to_toml(&self) -> String {
+    fn to_toml(&self) -> String {
         toml::to_string(&self).unwrap_or("".to_string())
     }
 }

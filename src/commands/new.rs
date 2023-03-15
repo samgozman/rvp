@@ -1,4 +1,4 @@
-use crate::structure::{Config, Resource, Selector};
+use crate::structure::{Config, Resource, Selector, ConfigFormat};
 use anyhow::Result;
 use clap::Parser;
 
@@ -28,9 +28,7 @@ pub async fn command(args: Args) -> Result<()> {
 
     let config = Config::new(name, description, resources);
 
-    let toml = config.to_toml();
-    // TODO: Write to file
-    println!("{}", toml);
+    config.save(ConfigFormat::TOML)?;
 
     println!("Done! Don't worry, you can edit the config file later.");
 
