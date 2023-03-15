@@ -28,7 +28,7 @@ pub async fn command(args: Args) -> Result<()> {
 
     let config = Config::new(name, description, resources);
 
-    let toml = toml::to_string(&config).unwrap();
+    let toml = config.to_toml();
     // TODO: Write to file
     println!("{}", toml);
 
