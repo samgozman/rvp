@@ -1,6 +1,6 @@
+use crate::structure::{Config, Resource, Selector};
 use anyhow::Result;
 use clap::Parser;
-use serde::Serialize;
 
 use inquire::{required, Confirm, Text};
 
@@ -12,6 +12,7 @@ pub struct Args {
     ///  *Optional.* If not provided, the default name will be used.
     #[arg(short, long, value_name = "NAME")]
     name: Option<String>,
+    // TODO: Add option to specify config file format (JSON or TOML)
 }
 
 pub async fn command(args: Args) -> Result<()> {
@@ -88,50 +89,4 @@ fn add_resource() -> Result<Vec<Resource>> {
     }
 
     Ok(resources)
-}
-
-// TODO: Move these structs to a separate file, implement some methods (like 'add', 'remove', 'list', etc.)
-
-/// A selector is named a path to a value on a web page
-#[derive(Serialize)]
-struct Selector {
-    path: String,
-    name: String,
-}
-
-impl Selector {
-    fn new(path: String, name: String) -> Self {
-        Self { path, name }
-    }
-}
-
-// A resource is a website with a list of selectors
-#[derive(Serialize)]
-struct Resource {
-    url: String,
-    selectors: Vec<Selector>,
-}
-
-impl Resource {
-    fn new(url: String, selectors: Vec<Selector>) -> Self {
-        Self { url, selectors }
-    }
-}
-
-// A config is a list of resources
-#[derive(Serialize)]
-struct Config {
-    name: String,
-    description: String,
-    resources: Vec<Resource>,
-}
-
-impl Config {
-    fn new(name: String, description: String, resources: Vec<Resource>) -> Self {
-        Self {
-            name,
-            description,
-            resources,
-        }
-    }
 }
