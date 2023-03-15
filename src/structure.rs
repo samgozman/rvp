@@ -50,6 +50,6 @@ impl Config {
 
     /// Convert config to TOML string
     pub fn to_toml(&self) -> String {
-        toml::to_string(&self).unwrap()
+        toml::to_string(&self).unwrap_or("".to_string())
     }
 }
