@@ -75,7 +75,7 @@ impl Config {
                 file_name = format!("{}.toml", self.name);
             }
             ConfigFormat::JSON => {
-                data = "".to_string(); // TODO: Implement JSON
+                data = self.to_json();
                 file_name = format!("{}.json", self.name);
             }
         };
@@ -89,5 +89,10 @@ impl Config {
     /// Convert config to TOML string
     fn to_toml(&self) -> String {
         toml::to_string(&self).unwrap_or("".to_string())
+    }
+
+    /// Convert config to JSON string
+    fn to_json(&self) -> String {
+        serde_json::to_string(&self).unwrap_or("".to_string())
     }
 }

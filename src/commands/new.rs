@@ -2,7 +2,7 @@ use crate::structure::{Config, ConfigFormat, Resource, Selector};
 use anyhow::Result;
 use clap::Parser;
 
-use inquire::{required, Confirm, Text};
+use inquire::{required, Confirm, Select, Text};
 
 /// Create new config file to grab multiple values from a web page at once.
 #[derive(Parser)]
@@ -12,12 +12,19 @@ pub struct Args {
     ///  *Optional.* If not provided, the default name will be used.
     #[arg(short, long, value_name = "NAME")]
     name: Option<String>,
-    // TODO: Add option to specify config file format (JSON or TOML)
 }
 
 pub async fn command(args: Args) -> Result<()> {
     let name = args.name.unwrap_or("default".to_string());
-    println!("Creating new config file {}.toml", name);
+
+    let options = vec!["TOML", "JSON"];
+    let format = Select::new("Save configuration in:", options).prompt()?;
+
+    println!(
+        "Creating new config file {}.{}",
+        name,
+        format.to_lowercase()
+    );
 
     let description = Text::new("Config description:")
         .with_help_message("(Optional) Create a helpful description for this config file")
@@ -30,7 +37,11 @@ pub async fn command(args: Args) -> Result<()> {
 
     // todo: check if file exists before saving it
 
-    let path = config.save(ConfigFormat::TOML)?;
+    let path = config.save(match format {
+        "TOML" => ConfigFormat::TOML,
+        "JSON" => ConfigFormat::JSON,
+        _ => unreachable!(),
+    })?;
 
     println!("Config file saved to {}", path.display());
     println!("Done! Don't worry, you can edit the config file later.");
