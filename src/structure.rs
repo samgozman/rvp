@@ -57,15 +57,15 @@ impl Config {
         }
     }
 
-/// Saves the [Config] structure to a file with the given name and specified format.
-/// 
-/// Arguments:
-/// 
-/// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
-/// 
-/// Returns:
-/// 
-/// A path to the saved config [Result<PathBuf, std::io::Error>]
+    /// Saves the [Config] structure to a file with the given name and specified format.
+    ///
+    /// Arguments:
+    ///
+    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    ///
+    /// Returns:
+    ///
+    /// A path to the saved config [Result<PathBuf, std::io::Error>]
     pub fn save(&self, cf: ConfigFormat) -> Result<PathBuf, std::io::Error> {
         let data: String;
         let file_name: String;

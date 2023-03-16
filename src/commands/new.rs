@@ -1,8 +1,13 @@
 use crate::structure::{Config, ConfigFormat, Resource, Selector};
 use anyhow::Result;
 use clap::Parser;
+use validator::validate_url;
 
-use inquire::{required, Confirm, Select, Text};
+use inquire::{
+    required,
+    validator::Validation::{Invalid, Valid},
+    Confirm, Select, Text,
+};
 
 /// Create new config file to grab multiple values from a web page at once.
 #[derive(Parser)]
@@ -81,13 +86,16 @@ fn add_resource() -> Result<Vec<Resource>> {
     let mut resources: Vec<Resource> = Vec::new();
 
     'resource_loop: loop {
-        // TODO: Add URL validation
         let url = Text::new("Site URL:")
             .with_validator(required!("This field is required"))
             .with_help_message("http://example.com")
+            .with_validator(|input: &str| match validate_url(input) {
+                true => Ok(Valid),
+                false => Ok(Invalid("must be a valid URL!".into())),
+            })
             .prompt()?;
-        let selectors = add_selectors()?;
 
+        let selectors = add_selectors()?;
         resources.push(Resource::new(url, selectors));
 
         println!("New Resource added!");
