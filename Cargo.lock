@@ -1183,6 +1183,7 @@ dependencies = [
  "clap",
  "inquire",
  "paste",
+ "rand 0.8.5",
  "reqwest",
  "scraper",
  "serde",

@@ -6,9 +6,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[derive(Clone)]
 pub enum ConfigFormat {
-    TOML,
-    JSON,
+    Toml,
+    Json,
 }
 
 /// A selector is named a path to a value on a web page
@@ -42,7 +43,7 @@ impl Resource {
 // A config is a list of resources
 #[derive(Serialize)]
 pub struct Config {
-    name: String,
+    pub name: String,
     description: String,
     resources: Vec<Resource>,
 }
@@ -67,23 +68,33 @@ impl Config {
     ///
     /// A path to the saved config [Result<PathBuf, std::io::Error>]
     pub fn save(&self, cf: ConfigFormat) -> Result<PathBuf, std::io::Error> {
-        let data: String;
-        let file_name: String;
-        match cf {
-            ConfigFormat::TOML => {
-                data = self.to_toml();
-                file_name = format!("{}.toml", self.name);
-            }
-            ConfigFormat::JSON => {
-                data = self.to_json();
-                file_name = format!("{}.json", self.name);
-            }
+        let data = match cf {
+            ConfigFormat::Toml => self.to_toml(),
+            ConfigFormat::Json => self.to_json(),
         };
 
-        let full_path = Path::new(&env::current_dir().unwrap()).join(&file_name);
+        let full_path = self.get_full_path(cf);
         std::fs::write(full_path.clone(), data)?;
 
         Ok(full_path)
+    }
+
+    /// It returns the full path of the config file
+    ///
+    /// Arguments:
+    ///
+    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    ///
+    /// Returns:
+    ///
+    /// A [PathBuf]
+    pub fn get_full_path(&self, cf: ConfigFormat) -> PathBuf {
+        let file_name = match cf {
+            ConfigFormat::Toml => format!("{}.toml", self.name),
+            ConfigFormat::Json => format!("{}.json", self.name),
+        };
+
+        Path::new(&env::current_dir().unwrap()).join(file_name)
     }
 
     /// Convert config to TOML string
