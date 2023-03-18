@@ -2,6 +2,11 @@ use anyhow::{anyhow, Result};
 use reqwest::get;
 use scraper::{Html, Selector};
 
+pub struct ParsedValue {
+    pub name: String,
+    pub value: String,
+}
+
 /// It fetches the HTML from the given URL, parses it into a DOM, and then uses the given CSS selector
 /// to extract the text from the first matching element
 ///
@@ -17,6 +22,35 @@ pub async fn grab_one(selector: &str, from: &str) -> Result<String> {
     let document = fetch_html(from).await?;
     let selector = Selector::parse(selector).unwrap();
     parse_value(&document, &selector)
+}
+/// It takes a list of selectors and a URL, fetches the HTML from the URL, and then parses the HTML
+/// using the selectors
+///
+/// Arguments:
+///
+/// * `selectors`: A vector of CSS selectors.
+/// * `from`: The URL to fetch the HTML from.
+///
+/// Returns:
+///
+/// A vector of parsed values [Result<Vec<ParsedValue>>].
+pub async fn grab(
+    selectors: Vec<crate::structure::Selector>,
+    from: &str,
+) -> Result<Vec<ParsedValue>> {
+    let document = fetch_html(from).await?;
+    let mut values = Vec::new();
+
+    for selector in selectors.iter() {
+        let parsed = Selector::parse(&selector.path).unwrap();
+        let value = parse_value(&document, &parsed)?;
+        values.push(ParsedValue {
+            name: selector.name.clone(),
+            value,
+        });
+    }
+
+    Ok(values)
 }
 
 /// It fetches the HTML document at the given URL, parses it, and returns the result
@@ -102,6 +136,19 @@ mod tests {
     async fn test_grab_one() -> Result<()> {
         let value = grab_one("body > div > h1", "http://example.com").await?;
         assert_eq!(value, "Example Domain");
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab() -> Result<()> {
+        let selectors = vec![crate::structure::Selector {
+            name: "title".to_string(),
+            path: "body > div > h1".to_string(),
+        }];
+        let values = grab(selectors, "http://example.com").await?;
+        assert_eq!(values.len(), 1);
+        assert_eq!(values[0].name, "title");
+        assert_eq!(values[0].value, "Example Domain");
         Ok(())
     }
 }

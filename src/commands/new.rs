@@ -105,6 +105,8 @@ fn add_selectors() -> Result<Vec<Selector>> {
 fn add_resource() -> Result<Vec<Resource>> {
     let mut resources: Vec<Resource> = Vec::new();
 
+    // TODO: add variable that will be used as url parameter
+
     'resource_loop: loop {
         let url = Text::new("Site URL:")
             .with_validator(required!("This field is required"))

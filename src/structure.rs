@@ -16,8 +16,8 @@ pub enum ConfigFormat {
 /// A selector is named a path to a value on a web page
 #[derive(Serialize, Deserialize)]
 pub struct Selector {
-    path: String,
-    name: String,
+    pub path: String,
+    pub name: String,
 }
 
 impl Selector {
@@ -30,8 +30,8 @@ impl Selector {
 // A resource is a website with a list of selectors
 #[derive(Serialize, Deserialize)]
 pub struct Resource {
-    url: String,
-    selectors: Vec<Selector>,
+    pub url: String,
+    pub selectors: Vec<Selector>,
 }
 
 impl Resource {
@@ -46,7 +46,7 @@ impl Resource {
 pub struct Config {
     pub name: String,
     description: String,
-    resources: Vec<Resource>,
+    pub resources: Vec<Resource>,
 }
 
 impl Config {
@@ -64,7 +64,7 @@ impl Config {
     /// Arguments:
     ///
     /// * `path`: The path to the file to read from.
-    /// * `cf`: ConfigFormat - This is the format of the config file.
+    /// * `cf`: [ConfigFormat] - This is the format of the config file.
     ///
     /// Returns:
     ///
