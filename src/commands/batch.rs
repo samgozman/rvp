@@ -33,8 +33,6 @@ pub struct Args {
     #[arg(long, num_args(0..))]
     params: Option<Vec<String>>,
     // TODO: Add --json option to output the data in JSON format
-    // be listed in resource structure. If one parameter is missing, than print the error
-    // message with the list of missing parameters.
 }
 
 pub async fn command(args: Args) -> Result<()> {
@@ -73,16 +71,15 @@ pub async fn command(args: Args) -> Result<()> {
     // TODO: parse in a thread pool
     for resource in config.resources {
         let parsed_values = scalper::grab(resource.selectors, &resource.url).await?;
-        print_table(&parsed_values, &resource.url);
+        println!("Table for resource:\n{}", resource.url);
+        println!("{}", generate_table(&parsed_values));
     }
 
     Ok(())
 }
 
-/// Print the parsed values in a table
-fn print_table(parsed_values: &Vec<ParsedValue>, resource_url: &String) {
-    println!("Table for resource:\n{}", resource_url);
-
+/// Generate table from parsed values
+fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
     let mut table = Table::new();
     table
         .load_preset(UTF8_FULL)
@@ -92,5 +89,38 @@ fn print_table(parsed_values: &Vec<ParsedValue>, resource_url: &String) {
         table.add_row(vec![&parsed_value.name, &parsed_value.value]);
     }
 
-    println!("{}", table);
+    table
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_table() {
+        let parsed_values = vec![
+            ParsedValue {
+                name: "name1".to_string(),
+                value: "value1".to_string(),
+            },
+            ParsedValue {
+                name: "name2".to_string(),
+                value: "value2".to_string(),
+            },
+        ];
+
+        let table = generate_table(&parsed_values);
+
+        assert_eq!(
+            table.to_string(),
+            "\
+        ╭───────┬────────╮\n\
+        │ Name  ┆ Value  │\n\
+        ╞═══════╪════════╡\n\
+        │ name1 ┆ value1 │\n\
+        ├╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤\n\
+        │ name2 ┆ value2 │\n\
+        ╰───────┴────────╯"
+        );
+    }
 }
