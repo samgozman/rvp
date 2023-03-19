@@ -15,8 +15,24 @@ pub struct Args {
     #[arg(short, long, value_name = "PATH", value_parser = value_parser!(PathBuf))]
     path: PathBuf,
 
+    /// (Optional) Parameters to be passed to the resources separated by spaces.
+    ///
+    /// Example:
+    ///
+    /// ```
+    /// --params param1 param2 param3
+    /// ```
+    ///
+    /// More complex example, if parameter is needed only for the first and the third resource:
+    ///
+    /// ```
+    /// --params param1 _ param3
+    /// ```
+    ///
+    /// In this case, you can pass any value for the second parameter, because it will be ignored.
+    #[arg(long, num_args(0..))]
+    params: Option<Vec<String>>,
     // TODO: Add --json option to output the data in JSON format
-    // TODO: Add optional vector of passed parameters. Predefined parameters should
     // be listed in resource structure. If one parameter is missing, than print the error
     // message with the list of missing parameters.
 }
@@ -32,7 +48,29 @@ pub async fn command(args: Args) -> Result<()> {
         _ => return Err(anyhow!("Invalid file format!")),
     };
 
-    let config = Config::from_file(&args.path, config_format)?;
+    let mut config = Config::from_file(&args.path, config_format)?;
+
+    if config.needs_parameters() {
+        if args.params.is_none() {
+            return Err(anyhow!(
+                "This config needs parameters!\nMore info: rvp batch --help"
+            ));
+        }
+
+        let params = args.params.unwrap();
+
+        if config.resources.len() != params.len() {
+            return Err(anyhow!(
+                "The number of parameters does not match the number of resources!"
+            ));
+        }
+
+        for (i, param) in params.iter().enumerate() {
+            config.resources[i].mut_url_with_param(param);
+        }
+    }
+
+    // TODO: parse in a thread pool
     for resource in config.resources {
         let parsed_values = scalper::grab(resource.selectors, &resource.url).await?;
         print_table(&parsed_values, &resource.url);

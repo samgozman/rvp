@@ -7,6 +7,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
+/// This is the placeholder for the parameters in the URL
+pub const URL_PARAM_PLACEHOLDER: &str = "%%";
+
 #[derive(Clone)]
 pub enum ConfigFormat {
     Toml,
@@ -38,6 +41,16 @@ impl Resource {
     /// Create a new resource
     pub fn new(url: String, selectors: Vec<Selector>) -> Self {
         Self { url, selectors }
+    }
+
+    /// It replaces the parameter placeholder with the given parameter
+    pub fn mut_url_with_param(&mut self, param: &str) {
+        self.url = self.url.replace(URL_PARAM_PLACEHOLDER, param);
+    }
+
+    /// It checks if the URL contains the parameter placeholder
+    fn needs_parameter(&self) -> bool {
+        self.url.contains(URL_PARAM_PLACEHOLDER)
     }
 }
 
@@ -114,6 +127,11 @@ impl Config {
         };
 
         Path::new(&env::current_dir().unwrap()).join(file_name)
+    }
+
+    /// It checks if the config resources need parameters
+    pub fn needs_parameters(&self) -> bool {
+        self.resources.iter().any(|r| r.needs_parameter())
     }
 
     /// Convert config to TOML string

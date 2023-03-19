@@ -1,4 +1,4 @@
-use crate::structure::{Config, ConfigFormat, Resource, Selector};
+use crate::structure::{Config, ConfigFormat, Resource, Selector, URL_PARAM_PLACEHOLDER};
 use anyhow::Result;
 use clap::Parser;
 use rand::distributions::{Alphanumeric, DistString};
@@ -37,7 +37,7 @@ pub async fn command(args: Args) -> Result<()> {
         .with_default("")
         .prompt()?;
 
-    let resources = add_resource()?;
+    let resources = add_resources()?;
 
     let mut config = Config::new(name, description, resources);
 
@@ -81,11 +81,11 @@ fn add_selectors() -> Result<Vec<Selector>> {
     'selector_loop: loop {
         let path = Text::new("Selector path:")
             .with_validator(required!("This field is required"))
-            .with_help_message("body > div > h1")
+            .with_help_message("e.g. body > div > h1")
             .prompt()?;
         let name = Text::new("Selector name:")
             .with_validator(required!("This field is required"))
-            .with_help_message("Title")
+            .with_help_message("e.g. title")
             .prompt()?;
         selectors.push(Selector::new(path, name));
 
@@ -102,15 +102,20 @@ fn add_selectors() -> Result<Vec<Selector>> {
 }
 
 /// Create list of resources from user input
-fn add_resource() -> Result<Vec<Resource>> {
+fn add_resources() -> Result<Vec<Resource>> {
     let mut resources: Vec<Resource> = Vec::new();
 
-    // TODO: add variable that will be used as url parameter
-
     'resource_loop: loop {
+        println!("\n\
+        To add new resource, please provide the following information:\n\
+        • 1. Site URL - `http://example.com?id={}` ({} will be replaced with the value of the URL parameter)\n\
+        • 2. List of selectors - list of CSS selectors that will be used to grab the values from the page
+        ", URL_PARAM_PLACEHOLDER, URL_PARAM_PLACEHOLDER);
         let url = Text::new("Site URL:")
             .with_validator(required!("This field is required"))
-            .with_help_message("http://example.com")
+            .with_help_message(
+                format!("e.g. http://example.com?id={}", URL_PARAM_PLACEHOLDER).as_str(),
+            )
             .with_validator(|input: &str| match validate_url(input) {
                 true => Ok(Valid),
                 false => Ok(Invalid("must be a valid URL!".into())),
