@@ -1,7 +1,9 @@
 use anyhow::{anyhow, Result};
 use reqwest::get;
 use scraper::{Html, Selector};
+use serde::Serialize;
 
+#[derive(Serialize, Clone)]
 pub struct ParsedValue {
     pub name: String,
     pub value: String,

@@ -7,6 +7,8 @@ use clap::{value_parser, Parser};
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
 use comfy_table::Table;
+use serde::Serialize;
+use serde_json::json;
 
 /// Parse multiple data fields from a N resources defined in a config file
 #[derive(Parser)]
@@ -32,7 +34,10 @@ pub struct Args {
     /// In this case, you can pass any value for the second parameter, because it will be ignored.
     #[arg(long, num_args(0..))]
     params: Option<Vec<String>>,
-    // TODO: Add --json option to output the data in JSON format
+
+    /// Output the data in JSON format
+    #[arg(long)]
+    json: bool,
 }
 
 pub async fn command(args: Args) -> Result<()> {
@@ -71,8 +76,14 @@ pub async fn command(args: Args) -> Result<()> {
     // TODO: parse in a thread pool
     for resource in config.resources {
         let parsed_values = scalper::grab(resource.selectors, &resource.url).await?;
-        println!("Table for resource:\n{}", resource.url);
-        println!("{}", generate_table(&parsed_values));
+
+        // TODO: Combine resources into one object and print it at the end (not in the loop)
+        if args.json {
+            println!("{}", generate_json(&parsed_values, resource.url));
+        } else {
+            println!("Table for resource:\n{}", resource.url);
+            println!("{}", generate_table(&parsed_values));
+        }
     }
 
     Ok(())
@@ -90,6 +101,26 @@ fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
     }
 
     table
+}
+
+/// Generate json from parsed values
+fn generate_json(parsed_values: &Vec<ParsedValue>, url: String) -> String {
+    let mut json_data = JsonData {
+        url,
+        data: Vec::new(),
+    };
+
+    for parsed_value in parsed_values {
+        json_data.data.push(parsed_value.clone());
+    }
+
+    json!(json_data).to_string()
+}
+
+#[derive(Serialize)]
+struct JsonData {
+    url: String,
+    data: Vec<ParsedValue>,
 }
 
 #[cfg(test)]
@@ -121,6 +152,27 @@ mod tests {
         ├╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤\n\
         │ name2 ┆ value2 │\n\
         ╰───────┴────────╯"
+        );
+    }
+
+    #[test]
+    fn test_generate_json() {
+        let parsed_values = vec![
+            ParsedValue {
+                name: "name1".to_string(),
+                value: "value1".to_string(),
+            },
+            ParsedValue {
+                name: "name2".to_string(),
+                value: "value2".to_string(),
+            },
+        ];
+
+        let json = generate_json(&parsed_values, "url".to_string());
+
+        assert_eq!(
+            json,
+            r#"{"data":[{"name":"name1","value":"value1"},{"name":"name2","value":"value2"}],"url":"url"}"#
         );
     }
 }
