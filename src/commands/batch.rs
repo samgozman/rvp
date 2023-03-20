@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, path::PathBuf};
 
-use crate::scalper::{self, ParsedValue};
+use crate::scalper::{grab, ParsedValue};
 use crate::structure::{Config, ConfigFormat};
 use anyhow::{anyhow, Ok, Result};
 use clap::{value_parser, Parser};
@@ -75,7 +75,7 @@ pub async fn command(args: Args) -> Result<()> {
 
     // TODO: parse in a thread pool
     for resource in config.resources {
-        let parsed_values = scalper::grab(resource.selectors, &resource.url).await?;
+        let parsed_values = grab(resource.selectors, &resource.url).await?;
 
         // TODO: Combine resources into one object and print it at the end (not in the loop)
         if args.json {
