@@ -3,7 +3,7 @@ use anyhow::{anyhow, Result};
 /// It is used to create and serialize the config file.
 use serde::{Deserialize, Serialize};
 use std::{
-    env, fs,
+    env, fmt, fs, ops,
     path::{Path, PathBuf},
 };
 
@@ -17,7 +17,7 @@ pub enum ConfigFormat {
 }
 
 /// A selector is named a path to a value on a web page
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub struct Selector {
     pub path: String,
     pub name: String,
@@ -31,7 +31,7 @@ impl Selector {
 }
 
 // A resource is a website with a list of selectors
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub struct Resource {
     pub url: String,
     pub selectors: Vec<Selector>,
@@ -54,8 +54,46 @@ impl Resource {
     }
 }
 
+impl fmt::Display for Resource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "\"{}\" with {} selectors",
+            self.url,
+            self.selectors.len()
+        )
+    }
+}
+
+// Implement the Index trait for Vec<Resource> use Resource as index for the vector
+impl ops::Index<Resource> for Vec<Resource> {
+    type Output = Resource;
+
+    fn index(&self, index: Resource) -> &Self::Output {
+        for resource in self.iter() {
+            if resource == &index {
+                return resource;
+            }
+        }
+        panic!("resource not found");
+    }
+}
+
+// Implement the IndexMut trait for Vec<Resource> use &mut Resource as index for the vector
+// Requires the Index trait to be implemented.
+impl ops::IndexMut<Resource> for Vec<Resource> {
+    fn index_mut(&mut self, index: Resource) -> &mut Self::Output {
+        for resource in self {
+            if *resource == index {
+                return resource;
+            }
+        }
+        panic!("resource not found");
+    }
+}
+
 // A config is a list of resources
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Config {
     pub name: String,
     description: String,
