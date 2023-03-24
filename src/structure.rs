@@ -11,7 +11,7 @@ use std::{
 pub const URL_PARAM_PLACEHOLDER: &str = "%%";
 
 pub trait Position<T> {
-    /// It returns the position of the element in the vector
+    /// It returns the position of the element in the [Vec]
     fn position(&self, element: &T) -> usize;
 }
 
