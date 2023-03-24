@@ -12,10 +12,9 @@ pub const URL_PARAM_PLACEHOLDER: &str = "%%";
 
 pub trait Position<T> {
     /// It returns the position of the element in the [Vec]
-    fn position(&self, element: &T) -> usize;
+    fn position(&self, element: T) -> usize;
 }
 
-#[derive(Clone)]
 pub enum ConfigFormat {
     Toml,
     Json,
@@ -71,12 +70,12 @@ impl fmt::Display for Resource {
 }
 
 // Implement the Index trait for Vec<Resource> use Resource as index for the vector
-impl ops::Index<Resource> for Vec<Resource> {
+impl ops::Index<&Resource> for Vec<Resource> {
     type Output = Resource;
 
-    fn index(&self, index: Resource) -> &Self::Output {
+    fn index(&self, index: &Resource) -> &Self::Output {
         for resource in self.iter() {
-            if resource == &index {
+            if resource == index {
                 return resource;
             }
         }
@@ -86,10 +85,10 @@ impl ops::Index<Resource> for Vec<Resource> {
 
 // Implement the IndexMut trait for Vec<Resource> use &mut Resource as index for the vector
 // Requires the Index trait to be implemented.
-impl ops::IndexMut<Resource> for Vec<Resource> {
-    fn index_mut(&mut self, index: Resource) -> &mut Self::Output {
+impl ops::IndexMut<&Resource> for Vec<Resource> {
+    fn index_mut(&mut self, index: &Resource) -> &mut Self::Output {
         for resource in self {
-            if *resource == index {
+            if resource == index {
                 return resource;
             }
         }
@@ -97,7 +96,7 @@ impl ops::IndexMut<Resource> for Vec<Resource> {
     }
 }
 
-impl Position<Resource> for Vec<Resource> {
+impl Position<&Resource> for Vec<Resource> {
     fn position(&self, element: &Resource) -> usize {
         self.iter().position(|r| r == element).unwrap()
     }
@@ -131,7 +130,7 @@ impl Config {
     /// Returns:
     ///
     /// A [Result<Self>]
-    pub fn from_file(path: &Path, cf: ConfigFormat) -> Result<Self> {
+    pub fn from_file(path: &Path, cf: &ConfigFormat) -> Result<Self> {
         let data = fs::read_to_string(path)?;
         match cf {
             ConfigFormat::Toml => Self::from_toml(&data),
@@ -148,7 +147,7 @@ impl Config {
     /// Returns:
     ///
     /// A path to the saved config [Result<PathBuf, std::io::Error>]
-    pub fn save(&self, cf: ConfigFormat) -> Result<PathBuf> {
+    pub fn save(&self, cf: &ConfigFormat) -> Result<PathBuf> {
         let data = match cf {
             ConfigFormat::Toml => self.to_toml(),
             ConfigFormat::Json => self.to_json(),
@@ -169,7 +168,7 @@ impl Config {
     /// Returns:
     ///
     /// A [PathBuf]
-    pub fn get_full_path(&self, cf: ConfigFormat) -> PathBuf {
+    pub fn get_full_path(&self, cf: &ConfigFormat) -> PathBuf {
         let file_name = match cf {
             ConfigFormat::Toml => format!("{}.toml", self.name),
             ConfigFormat::Json => format!("{}.json", self.name),

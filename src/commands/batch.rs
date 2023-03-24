@@ -51,7 +51,7 @@ pub async fn command(args: Args) -> Result<()> {
         _ => return Err(anyhow!("Invalid file format!")),
     };
 
-    let mut config = Config::from_file(&args.path, config_format)?;
+    let mut config = Config::from_file(&args.path, &config_format)?;
 
     if config.needs_parameters() {
         if args.params.is_none() {

@@ -46,7 +46,7 @@ pub async fn command(args: Args) -> Result<()> {
         "JSON" => ConfigFormat::Json,
         _ => unreachable!(),
     };
-    let path = config.get_full_path(cf.clone());
+    let path = config.get_full_path(&cf);
     match path.exists() {
         true => {
             let overwrite = Confirm::new("Config file already exists. Overwrite?")
@@ -66,7 +66,7 @@ pub async fn command(args: Args) -> Result<()> {
         false => {}
     }
 
-    let path = config.save(cf)?;
+    let path = config.save(&cf)?;
 
     println!("Config file saved to {}", path.display());
     println!("Done! Don't worry, you can edit the config file later.");

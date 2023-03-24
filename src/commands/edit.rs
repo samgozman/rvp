@@ -29,7 +29,7 @@ pub async fn command(args: Args) -> Result<()> {
         _ => return Err(anyhow!("Invalid file format!")),
     };
 
-    let mut config = Config::from_file(&args.path, config_format.clone())?;
+    let mut config = Config::from_file(&args.path, &config_format)?;
 
     'resource_loop: loop {
         let resource =
@@ -40,7 +40,7 @@ pub async fn command(args: Args) -> Result<()> {
 
         match action {
             "Edit URL" => {
-                config.resources[resource].url = Text::new("Site URL:")
+                config.resources[&resource].url = Text::new("Site URL:")
                     .with_validator(required!("This field is required"))
                     .with_initial_value(&resource.url)
                     .with_help_message(
@@ -82,7 +82,7 @@ pub async fn command(args: Args) -> Result<()> {
 
     match Confirm::new("Save changes?").with_default(true).prompt()? {
         true => {
-            config.save(config_format)?;
+            config.save(&config_format)?;
             println!("Config file saved!");
         }
         false => println!("Changes discarded."),
