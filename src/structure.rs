@@ -34,6 +34,18 @@ impl Selector {
     }
 }
 
+impl fmt::Display for Selector {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}
+
+impl Position<&Selector> for Vec<Selector> {
+    fn position(&self, element: &Selector) -> usize {
+        self.iter().position(|s| s == element).unwrap()
+    }
+}
+
 // A resource is a website with a list of selectors
 #[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub struct Resource {

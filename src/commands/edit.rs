@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, path::PathBuf};
 
-use crate::structure::{Config, ConfigFormat, Position, URL_PARAM_PLACEHOLDER};
+use crate::structure::{Config, ConfigFormat, Position, Resource, URL_PARAM_PLACEHOLDER};
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use inquire::{
@@ -53,7 +53,7 @@ pub async fn command(args: Args) -> Result<()> {
                     .prompt()?;
             }
             "Edit selectors" => {
-                unimplemented!()
+                edit_selectors(&mut config, &resource)?;
             }
             "Delete" => {
                 if Confirm::new("Are you sure you want to delete this resource?")
@@ -88,8 +88,68 @@ pub async fn command(args: Args) -> Result<()> {
         false => println!("Changes discarded."),
     }
 
-    // ? All of this will be performed in multiple levels of loops
-    // TODO: If selectors, choose action: add, edit, delete, back
+    Ok(())
+}
+
+fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
+    'edit_selectors: loop {
+        let action = Select::new(
+            "Select action:",
+            vec!["Add selector", "Edit selectors", "⏹ Exit"],
+        )
+        .prompt()?;
+
+        match action {
+            "Add selector" => {
+                unimplemented!()
+            }
+            "Edit selectors" => 'selectors_loop: loop {
+                let selector = Select::new(
+                    "Choose selector to edit:",
+                    config.resources[resource].selectors.clone(),
+                )
+                .with_help_message("Choose selector to edit or delete.")
+                .prompt()?;
+
+                let actions = vec!["Rename", "Edit", "Delete", "↩ Back", "⏹ Exit"];
+                let action = Select::new("Select action:", actions).prompt().unwrap();
+
+                match action {
+                    "Rename" => {
+                        unimplemented!()
+                    }
+                    "Edit" => {
+                        unimplemented!()
+                    }
+                    "Delete" => {
+                        if Confirm::new("Are you sure you want to delete this selector?")
+                            .with_default(false)
+                            .prompt()?
+                        {
+                            let index = config.resources[resource].selectors.position(&selector);
+                            config.resources[resource].selectors.remove(index);
+                            break 'selectors_loop;
+                        }
+                    }
+                    "↩ Back" => continue 'selectors_loop,
+                    "⏹ Exit" => break 'selectors_loop,
+                    _ => unreachable!(),
+                }
+            },
+            "⏹ Exit" => break 'edit_selectors,
+            _ => unreachable!(),
+        }
+
+        match Confirm::new("Edit more selectors?")
+            .with_default(true)
+            .prompt()?
+        {
+            true => {
+                continue 'edit_selectors;
+            }
+            false => break 'edit_selectors,
+        }
+    }
 
     Ok(())
 }
