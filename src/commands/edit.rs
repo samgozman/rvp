@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, path::PathBuf};
 
-use crate::structure::{Config, ConfigFormat, URL_PARAM_PLACEHOLDER};
+use crate::structure::{Config, ConfigFormat, Position, URL_PARAM_PLACEHOLDER};
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use inquire::{
@@ -35,7 +35,7 @@ pub async fn command(args: Args) -> Result<()> {
         let resource =
             Select::new("Select resource to edit:", config.resources.clone()).prompt()?;
 
-        let actions = vec!["Edit URL", "Edit selectors", "↩ Back", "⏹ Exit"];
+        let actions = vec!["Edit URL", "Edit selectors", "Delete", "↩ Back", "⏹ Exit"];
         let action = Select::new("Select action:", actions).prompt()?;
 
         match action {
@@ -55,9 +55,28 @@ pub async fn command(args: Args) -> Result<()> {
             "Edit selectors" => {
                 unimplemented!()
             }
+            "Delete" => {
+                if Confirm::new("Are you sure you want to delete this resource?")
+                    .with_default(false)
+                    .prompt()?
+                {
+                    let index = config.resources.position(&resource);
+                    config.resources.remove(index);
+                }
+            }
             "↩ Back" => continue 'resource_loop,
             "⏹ Exit" => break 'resource_loop,
             _ => unreachable!(),
+        }
+
+        match Confirm::new("Edit more resources?")
+            .with_default(true)
+            .prompt()?
+        {
+            true => {
+                continue 'resource_loop;
+            }
+            false => break 'resource_loop,
         }
     }
 

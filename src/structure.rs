@@ -10,6 +10,11 @@ use std::{
 /// This is the placeholder for the parameters in the URL
 pub const URL_PARAM_PLACEHOLDER: &str = "%%";
 
+pub trait Position<T> {
+    /// It returns the position of the element in the vector
+    fn position(&self, element: &T) -> usize;
+}
+
 #[derive(Clone)]
 pub enum ConfigFormat {
     Toml,
@@ -89,6 +94,12 @@ impl ops::IndexMut<Resource> for Vec<Resource> {
             }
         }
         panic!("resource not found");
+    }
+}
+
+impl Position<Resource> for Vec<Resource> {
+    fn position(&self, element: &Resource) -> usize {
+        self.iter().position(|r| r == element).unwrap()
     }
 }
 
