@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, path::PathBuf};
 
-use crate::structure::{Config, ConfigFormat, Position, Resource, URL_PARAM_PLACEHOLDER};
+use crate::structure::{Config, ConfigFormat, Position, Resource, Selector, URL_PARAM_PLACEHOLDER};
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use inquire::{
@@ -101,7 +101,17 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
 
         match action {
             "Add selector" => {
-                unimplemented!()
+                let path = Text::new("Selector path:")
+                    .with_validator(required!("This field is required"))
+                    .with_help_message("e.g. body > div > h1")
+                    .prompt()?;
+                let name = Text::new("Selector name:")
+                    .with_validator(required!("This field is required"))
+                    .with_help_message("e.g. title")
+                    .prompt()?;
+                config.resources[resource]
+                    .selectors
+                    .push(Selector::new(path, name));
             }
             "Edit selectors" => 'selectors_loop: loop {
                 let selector = Select::new(
