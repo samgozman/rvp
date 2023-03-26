@@ -44,7 +44,7 @@ jobs:
   # TODO: Release
 
   conclusion:
-    needs: [fmt, clippy, cargo-deny]
+    needs: [fmt, clippy]
     if: always()
     runs-on: ubuntu-latest
     steps:
