@@ -1,9 +1,10 @@
 on:
   pull_request:
-  push:
-    branches: [main]
-    tags:
-      - "v*.*.*"
+  # # TODO: Enable this on first release
+  # push:
+  #   branches: [main]
+  #   tags:
+  #     - "v*.*.*"
 
 name: CI
 
