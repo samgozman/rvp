@@ -1,0 +1,62 @@
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags:
+      - "v*.*.*"
+
+name: CI
+
+jobs:
+  cargo-deny:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: EmbarkStudios/cargo-deny-action@v1
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/setup-rust
+        with:
+          components: rustfmt
+
+      - name: Run rustfmt
+        run: cargo fmt -- --check
+
+  clippy:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/setup-rust
+        with:
+          components: clippy
+          toolchain: 1.68.0
+      - name: Run clippy
+        run: cargo clippy --locked --all-targets --all-features --workspace -- -D warnings
+
+  # TODO: Tests
+  # TODO: Build
+  # TODO: Release
+
+  conclusion:
+    needs: [fmt, clippy, cargo-deny]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Result
+        run: |
+          jq -C <<< "${needs}"
+          # Check if all needs were successful or skipped.
+          "$(jq -r 'all(.result as $result | (["success", "skipped"] | contains([$result])))' <<< "${needs}")"
+        env:
+          needs: ${{ toJson(needs) }}
