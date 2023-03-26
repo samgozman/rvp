@@ -46,6 +46,31 @@ impl Position<&Selector> for Vec<Selector> {
     }
 }
 
+// TODO: Create macros for the Index and IndexMut traits
+impl ops::Index<&Selector> for Vec<Selector> {
+    type Output = Selector;
+
+    fn index(&self, index: &Selector) -> &Self::Output {
+        for selector in self.iter() {
+            if selector == index {
+                return selector;
+            }
+        }
+        panic!("selector not found");
+    }
+}
+
+impl ops::IndexMut<&Selector> for Vec<Selector> {
+    fn index_mut(&mut self, index: &Selector) -> &mut Self::Output {
+        for selector in self {
+            if selector == index {
+                return selector;
+            }
+        }
+        panic!("selector not found");
+    }
+}
+
 // A resource is a website with a list of selectors
 #[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub struct Resource {

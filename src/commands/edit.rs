@@ -106,20 +106,31 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
             "Edit selectors" => 'selectors_loop: loop {
                 let selector = Select::new(
                     "Choose selector to edit:",
+                    // TODO: Fix bug: selector names are not updated in the cloned vector
                     config.resources[resource].selectors.clone(),
                 )
                 .with_help_message("Choose selector to edit or delete.")
                 .prompt()?;
 
                 let actions = vec!["Rename", "Edit", "Delete", "↩ Back", "⏹ Exit"];
-                let action = Select::new("Select action:", actions).prompt().unwrap();
+                let action = Select::new("Select action:", actions).prompt()?;
 
                 match action {
                     "Rename" => {
-                        unimplemented!()
+                        config.resources[resource].selectors[&selector].name = Text::new("Name:")
+                            .with_validator(required!("This field is required"))
+                            .with_help_message("e.g. title")
+                            .with_initial_value(&selector.name)
+                            .prompt()?;
+                        break 'selectors_loop;
                     }
                     "Edit" => {
-                        unimplemented!()
+                        config.resources[resource].selectors[&selector].path = Text::new("Path:")
+                            .with_validator(required!("This field is required"))
+                            .with_help_message("e.g. body > div > h1")
+                            .with_initial_value(&selector.path)
+                            .prompt()?;
+                        break 'selectors_loop;
                     }
                     "Delete" => {
                         if Confirm::new("Are you sure you want to delete this selector?")
