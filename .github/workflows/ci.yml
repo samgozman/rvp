@@ -38,13 +38,33 @@ jobs:
           toolchain: 1.68.0
       - name: Run clippy
         run: cargo clippy --locked --all-targets --all-features --workspace -- -D warnings
+        timeout-minutes: 10
 
-  # TODO: Tests
   # TODO: Build
   # TODO: Release
 
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1.0.6
+        with:
+          name: test-${{matrix.os}}
+          toolchain: 1.68.0
+
+      - name: Run unit tests
+        run: cargo test --locked --all-targets --workspace --all-features
+        timeout-minutes: 10
+
   conclusion:
-    needs: [fmt, clippy]
+    needs: [fmt, clippy, test]
     if: always()
     runs-on: ubuntu-latest
     steps:
