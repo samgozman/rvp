@@ -1,7 +1,7 @@
 use std::{ffi::OsStr, path::PathBuf};
 
 use crate::structure::{
-    Config, ConfigFormat, ParsedType, Position, Resource, Selector, URL_PARAM_PLACEHOLDER,
+    Config, ConfigFormat, SelectorType, Position, Resource, Selector, URL_PARAM_PLACEHOLDER,
 };
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
@@ -111,7 +111,7 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                     .with_validator(required!("This field is required"))
                     .with_help_message("e.g. title")
                     .prompt()?;
-                let parsed_type = Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
+                let parsed_type = Select::new("Selector type:", SelectorType::to_vec()).prompt()?;
                 config.resources[resource]
                     .selectors
                     .push(Selector::new(path, name, parsed_type));
@@ -154,7 +154,7 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                     }
                     "Change type" => {
                         config.resources[resource].selectors[&selector].parsed_type =
-                            Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
+                            Select::new("Selector type:", SelectorType::to_vec()).prompt()?;
                         break 'selectors_loop;
                     }
                     "Delete" => {

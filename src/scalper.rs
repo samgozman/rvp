@@ -146,7 +146,7 @@ mod tests {
         let selectors = vec![crate::structure::Selector {
             name: "title".to_string(),
             path: "body > div > h1".to_string(),
-            parsed_type: crate::structure::ParsedType::String,
+            parsed_type: crate::structure::SelectorType::String,
         }];
         let values = grab(selectors, "http://example.com").await?;
         assert_eq!(values.len(), 1);

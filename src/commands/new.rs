@@ -1,5 +1,5 @@
 use crate::structure::{
-    Config, ConfigFormat, ParsedType, Resource, Selector, URL_PARAM_PLACEHOLDER,
+    Config, ConfigFormat, SelectorType, Resource, Selector, URL_PARAM_PLACEHOLDER,
 };
 use anyhow::Result;
 use clap::Parser;
@@ -89,7 +89,7 @@ fn add_selectors() -> Result<Vec<Selector>> {
             .with_validator(required!("This field is required"))
             .with_help_message("e.g. title")
             .prompt()?;
-        let parsed_type = Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
+        let parsed_type = Select::new("Selector type:", SelectorType::to_vec()).prompt()?;
         selectors.push(Selector::new(path, name, parsed_type));
 
         let add_another = Confirm::new("Add another Selector?")

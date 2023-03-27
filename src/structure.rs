@@ -24,27 +24,27 @@ pub enum ConfigFormat {
 
 /// The type for parsed [Selector] values
 #[derive(Serialize, Deserialize, Clone, PartialEq)]
-pub enum ParsedType {
+pub enum SelectorType {
     String,
     Number,
 }
 
-impl ParsedType {
+impl SelectorType {
     /// It returns a vector of all the possible [ParsedType]s
-    pub fn to_vec() -> Vec<ParsedType> {
-        vec![ParsedType::String, ParsedType::Number]
+    pub fn to_vec() -> Vec<SelectorType> {
+        vec![SelectorType::String, SelectorType::Number]
     }
 
     /// It returns the string representation of the [ParsedType]
     fn as_str(&self) -> &'static str {
         match self {
-            ParsedType::String => "String",
-            ParsedType::Number => "Number",
+            SelectorType::String => "String",
+            SelectorType::Number => "Number",
         }
     }
 }
 
-impl fmt::Display for ParsedType {
+impl fmt::Display for SelectorType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -55,12 +55,12 @@ impl fmt::Display for ParsedType {
 pub struct Selector {
     pub path: String,
     pub name: String,
-    pub parsed_type: ParsedType,
+    pub parsed_type: SelectorType,
 }
 
 impl Selector {
     /// Create a new selector
-    pub fn new(path: String, name: String, parsed_type: ParsedType) -> Self {
+    pub fn new(path: String, name: String, parsed_type: SelectorType) -> Self {
         Self {
             path,
             name,
