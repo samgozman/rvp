@@ -15,9 +15,39 @@ pub trait Position<T> {
     fn position(&self, element: T) -> usize;
 }
 
+/// This is the format of the config file to be saved or read
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub enum ConfigFormat {
     Toml,
     Json,
+}
+
+/// The type for parsed [Selector] values
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
+pub enum ParsedType {
+    String,
+    Number,
+}
+
+impl ParsedType {
+    /// It returns a vector of all the possible [ParsedType]s
+    pub fn to_vec() -> Vec<ParsedType> {
+        vec![ParsedType::String, ParsedType::Number]
+    }
+
+    /// It returns the string representation of the [ParsedType]
+    fn as_str(&self) -> &'static str {
+        match self {
+            ParsedType::String => "String",
+            ParsedType::Number => "Number",
+        }
+    }
+}
+
+impl fmt::Display for ParsedType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
 }
 
 /// A selector is named a path to a value on a web page
@@ -25,12 +55,17 @@ pub enum ConfigFormat {
 pub struct Selector {
     pub path: String,
     pub name: String,
+    pub parsed_type: ParsedType,
 }
 
 impl Selector {
     /// Create a new selector
-    pub fn new(path: String, name: String) -> Self {
-        Self { path, name }
+    pub fn new(path: String, name: String, parsed_type: ParsedType) -> Self {
+        Self {
+            path,
+            name,
+            parsed_type,
+        }
     }
 }
 

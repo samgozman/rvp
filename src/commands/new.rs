@@ -1,4 +1,6 @@
-use crate::structure::{Config, ConfigFormat, Resource, Selector, URL_PARAM_PLACEHOLDER};
+use crate::structure::{
+    Config, ConfigFormat, ParsedType, Resource, Selector, URL_PARAM_PLACEHOLDER,
+};
 use anyhow::Result;
 use clap::Parser;
 use rand::distributions::{Alphanumeric, DistString};
@@ -87,7 +89,8 @@ fn add_selectors() -> Result<Vec<Selector>> {
             .with_validator(required!("This field is required"))
             .with_help_message("e.g. title")
             .prompt()?;
-        selectors.push(Selector::new(path, name));
+        let parsed_type = Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
+        selectors.push(Selector::new(path, name, parsed_type));
 
         let add_another = Confirm::new("Add another Selector?")
             .with_default(false)

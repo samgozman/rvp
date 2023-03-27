@@ -1,6 +1,8 @@
 use std::{ffi::OsStr, path::PathBuf};
 
-use crate::structure::{Config, ConfigFormat, Position, Resource, Selector, URL_PARAM_PLACEHOLDER};
+use crate::structure::{
+    Config, ConfigFormat, ParsedType, Position, Resource, Selector, URL_PARAM_PLACEHOLDER,
+};
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use inquire::{
@@ -109,9 +111,10 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                     .with_validator(required!("This field is required"))
                     .with_help_message("e.g. title")
                     .prompt()?;
+                let parsed_type = Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
                 config.resources[resource]
                     .selectors
-                    .push(Selector::new(path, name));
+                    .push(Selector::new(path, name, parsed_type));
             }
             "Edit selectors" => 'selectors_loop: loop {
                 let selector = Select::new(
@@ -122,7 +125,14 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                 .with_help_message("Choose selector to edit or delete.")
                 .prompt()?;
 
-                let actions = vec!["Rename", "Edit", "Delete", "↩ Back", "⏹ Exit"];
+                let actions = vec![
+                    "Rename",
+                    "Edit",
+                    "Change type",
+                    "Delete",
+                    "↩ Back",
+                    "⏹ Exit",
+                ];
                 let action = Select::new("Select action:", actions).prompt()?;
 
                 match action {
@@ -140,6 +150,11 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                             .with_help_message("e.g. body > div > h1")
                             .with_initial_value(&selector.path)
                             .prompt()?;
+                        break 'selectors_loop;
+                    }
+                    "Change type" => {
+                        config.resources[resource].selectors[&selector].parsed_type =
+                            Select::new("Selector type:", ParsedType::to_vec()).prompt()?;
                         break 'selectors_loop;
                     }
                     "Delete" => {
