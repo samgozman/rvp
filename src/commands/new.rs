@@ -1,5 +1,5 @@
 use crate::structure::{
-    Config, ConfigFormat, SelectorType, Resource, Selector, URL_PARAM_PLACEHOLDER,
+    Config, ConfigFormat, Resource, Selector, SelectorType, URL_PARAM_PLACEHOLDER,
 };
 use anyhow::Result;
 use clap::Parser;

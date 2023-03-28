@@ -1,12 +1,16 @@
+use std::str::FromStr;
+
 use anyhow::{anyhow, Result};
 use reqwest::get;
 use scraper::{Html, Selector};
 use serde::Serialize;
+use serde_json::{Number, Value};
 
+/// Parsed key-value structure
 #[derive(Serialize, Clone)]
 pub struct ParsedValue {
     pub name: String,
-    pub value: String,
+    pub value: Value,
 }
 
 /// It fetches the HTML from the given URL, parses it into a DOM, and then uses the given CSS selector
@@ -46,6 +50,10 @@ pub async fn grab(
     for selector in selectors.iter() {
         let parsed = Selector::parse(&selector.path).unwrap();
         let value = parse_value(&document, &parsed)?;
+        let value = match selector.parsed_type {
+            crate::structure::SelectorType::String => Value::String(value),
+            crate::structure::SelectorType::Number => Value::Number(Number::from_str(&value)?),
+        };
         values.push(ParsedValue {
             name: selector.name.clone(),
             value,
@@ -150,8 +158,11 @@ mod tests {
         }];
         let values = grab(selectors, "http://example.com").await?;
         assert_eq!(values.len(), 1);
-        assert_eq!(values[0].name, "title");
-        assert_eq!(values[0].value, "Example Domain");
+        assert_eq!(&values[0].name, "title");
+        match &values[0].value {
+            Value::String(value) => assert_eq!(value, "Example Domain"),
+            _ => panic!("value should be a string!"),
+        }
         Ok(())
     }
 }

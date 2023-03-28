@@ -1,7 +1,7 @@
 use std::{ffi::OsStr, path::PathBuf};
 
 use crate::structure::{
-    Config, ConfigFormat, SelectorType, Position, Resource, Selector, URL_PARAM_PLACEHOLDER,
+    Config, ConfigFormat, Position, Resource, Selector, SelectorType, URL_PARAM_PLACEHOLDER,
 };
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};

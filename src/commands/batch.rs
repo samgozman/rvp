@@ -97,7 +97,7 @@ fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
         .apply_modifier(UTF8_ROUND_CORNERS)
         .set_header(vec!["Name", "Value"]);
     for parsed_value in parsed_values {
-        table.add_row(vec![&parsed_value.name, &parsed_value.value]);
+        table.add_row(vec![&parsed_value.name, &parsed_value.value.to_string()]);
     }
 
     table
@@ -105,6 +105,7 @@ fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
 
 /// Generate json from parsed values
 fn generate_json(parsed_values: &Vec<ParsedValue>, url: String) -> String {
+    // TODO: Create json with indentation
     let mut json_data = JsonData {
         url,
         data: Vec::new(),
@@ -126,17 +127,18 @@ struct JsonData {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::{Number, Value};
 
     #[test]
     fn test_generate_table() {
         let parsed_values = vec![
             ParsedValue {
                 name: "name1".to_string(),
-                value: "value1".to_string(),
+                value: Value::String("value1".to_string()),
             },
             ParsedValue {
                 name: "name2".to_string(),
-                value: "value2".to_string(),
+                value: Value::Number(Number::from_f64(2.2).unwrap()),
             },
         ];
 
@@ -145,13 +147,13 @@ mod tests {
         assert_eq!(
             table.to_string(),
             "\
-        ╭───────┬────────╮\n\
-        │ Name  ┆ Value  │\n\
-        ╞═══════╪════════╡\n\
-        │ name1 ┆ value1 │\n\
-        ├╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤\n\
-        │ name2 ┆ value2 │\n\
-        ╰───────┴────────╯"
+            ╭───────┬──────────╮\n\
+            │ Name  ┆ Value    │\n\
+            ╞═══════╪══════════╡\n\
+            │ name1 ┆ \"value1\" │\n\
+            ├╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┤\n\
+            │ name2 ┆ 2.2      │\n\
+            ╰───────┴──────────╯"
         );
     }
 
@@ -160,11 +162,11 @@ mod tests {
         let parsed_values = vec![
             ParsedValue {
                 name: "name1".to_string(),
-                value: "value1".to_string(),
+                value: Value::String("value1".to_string()),
             },
             ParsedValue {
                 name: "name2".to_string(),
-                value: "value2".to_string(),
+                value: Value::Number(Number::from_f64(25.6).unwrap()),
             },
         ];
 
@@ -172,7 +174,7 @@ mod tests {
 
         assert_eq!(
             json,
-            r#"{"data":[{"name":"name1","value":"value1"},{"name":"name2","value":"value2"}],"url":"url"}"#
+            r#"{"data":[{"name":"name1","value":"value1"},{"name":"name2","value":25.6}],"url":"url"}"#
         );
     }
 }
