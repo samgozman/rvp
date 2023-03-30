@@ -97,7 +97,9 @@ async fn fetch_html(url: &str) -> Result<Html> {
 fn parse_value(document: &Html, selector: &Selector) -> Result<String> {
     let element = match document.select(selector).next() {
         Some(element) => element,
-        None => return Err(anyhow!("selector not found in the HTML document")),
+        // No need to panic if the selector doesn't match anything. Just return an empty string.
+        // Let user decide what to do with it.
+        None => return Ok("".to_string()),
     };
 
     Ok(element.text().collect::<Vec<_>>().join(" "))
@@ -138,7 +140,7 @@ mod tests {
     async fn test_parse_value_with_invalid_selector() -> Result<()> {
         let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
         let selector = Selector::parse("h2").unwrap();
-        parse_value(&document, &selector).expect_err("should fail with invalid selector!");
+        parse_value(&document, &selector).expect("should not fail with invalid selector!");
         Ok(())
     }
 
@@ -162,6 +164,32 @@ mod tests {
         match &values[0].value {
             Value::String(value) => assert_eq!(value, "Example Domain"),
             _ => panic!("value should be a string!"),
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab_with_invalid_url() -> Result<()> {
+        let selectors = vec![crate::structure::Selector {
+            name: "title".to_string(),
+            path: "body > div > h1".to_string(),
+            parsed_type: crate::structure::SelectorType::String,
+        }];
+        if grab(selectors, "invalid-url").await.is_ok() {
+            panic!("should fail with invalid URL!");
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab_with_invalid_selector() -> Result<()> {
+        let selectors = vec![crate::structure::Selector {
+            name: "title".to_string(),
+            path: "body > div > h2".to_string(),
+            parsed_type: crate::structure::SelectorType::String,
+        }];
+        if grab(selectors, "http://example.com").await.is_err() {
+            panic!("should not fail with invalid selector and return an empty string!");
         }
         Ok(())
     }
