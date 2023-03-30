@@ -81,7 +81,6 @@ impl Position<&Selector> for Vec<Selector> {
     }
 }
 
-// TODO: Create macros for the Index and IndexMut traits
 impl ops::Index<&Selector> for Vec<Selector> {
     type Output = Selector;
 

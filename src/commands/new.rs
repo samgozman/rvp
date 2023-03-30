@@ -49,23 +49,18 @@ pub async fn command(args: Args) -> Result<()> {
         _ => unreachable!(),
     };
     let path = config.get_full_path(&cf);
-    match path.exists() {
-        true => {
-            let overwrite = Confirm::new("Config file already exists. Overwrite?")
-                .with_default(false)
-                .prompt()?;
-            if !overwrite {
-                // Generate a random name for the config file
-                // TODO: This can be replaced with a loop that checks if the file exists
-                // and dialog to ask the user to change the config name
-                config.name = format!(
-                    "{}_{}",
-                    config.name,
-                    Alphanumeric.sample_string(&mut rand::thread_rng(), 8)
-                );
-            }
+    if path.exists() {
+        let overwrite = Confirm::new("Config file already exists. Overwrite?")
+            .with_default(false)
+            .prompt()?;
+        if !overwrite {
+            // Generate a random name for the config file
+            config.name = format!(
+                "{}_{}",
+                config.name,
+                Alphanumeric.sample_string(&mut rand::thread_rng(), 8)
+            );
         }
-        false => {}
     }
 
     let path = config.save(&cf)?;
