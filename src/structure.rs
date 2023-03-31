@@ -279,3 +279,35 @@ impl Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_selector() {
+        let s0 = Selector::new("test".to_string(), "test".to_string(), SelectorType::String);
+        let s1 = Selector::new(
+            "test2".to_string(),
+            "test2".to_string(),
+            SelectorType::Number,
+        );
+
+        let selectors = vec![s0.clone(), s1.clone()];
+
+        assert_eq!(selectors[0].name, "test");
+        assert_eq!(selectors[1].path, "test2");
+
+        // Test position
+        assert_eq!(selectors.position(&s1), 1);
+
+        // Test the Index trait
+        assert_eq!(selectors[&s0].name, selectors[0].name);
+        assert_eq!(selectors[&s1].path, selectors[1].path);
+
+        // Test the IndexMut trait
+        let mut selectors = vec![s0.clone(), s1.clone()];
+        selectors[&s0].name = "test".to_string();
+        selectors[&s1].path = "test2".to_string();
+    }
+}
