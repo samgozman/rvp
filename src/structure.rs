@@ -310,4 +310,73 @@ mod tests {
         selectors[&s0].name = "test".to_string();
         selectors[&s1].path = "test2".to_string();
     }
+
+    #[test]
+    fn test_resource() {
+        let s0 = Selector::new("test".to_string(), "test".to_string(), SelectorType::String);
+        let s1 = Selector::new(
+            "test2".to_string(),
+            "test2".to_string(),
+            SelectorType::Number,
+        );
+
+        let selectors = vec![s0.clone(), s1.clone()];
+
+        let r0 = Resource::new("https://test.com/?id=%%".to_string(), selectors.clone());
+        let r1 = Resource::new("https://test2.com".to_string(), selectors.clone());
+
+        let resources = vec![r0.clone(), r1.clone()];
+
+        assert_eq!(resources[0].url, "https://test.com/?id=%%");
+        assert_eq!(resources[1].selectors[0].name, "test");
+
+        // Test position
+        assert_eq!(resources.position(&r1), 1);
+
+        // Test the Index trait
+        assert_eq!(resources[&r0].url, resources[0].url);
+        assert_eq!(
+            resources[&r1].selectors[0].name,
+            resources[1].selectors[0].name
+        );
+
+        // Test the IndexMut trait
+        let mut resources = vec![r0.clone(), r1.clone()];
+        resources[&r0].url = "https://test.com/?id=%%".to_string();
+        resources[&r1].selectors[0].name = "test".to_string();
+
+        // Test mut_url_with_param
+        let mut r2 = r0.clone();
+        r2.mut_url_with_param("test");
+        assert_eq!(r2.url, "https://test.com/?id=test");
+
+        // Test needs_parameter
+        assert_eq!(r0.needs_parameter(), true);
+        assert_eq!(r1.needs_parameter(), false);
+    }
+
+    #[test]
+    fn test_config() {
+        let s0 = Selector::new("test".to_string(), "test".to_string(), SelectorType::String);
+        let s1 = Selector::new(
+            "test2".to_string(),
+            "test2".to_string(),
+            SelectorType::Number,
+        );
+
+        let selectors = vec![s0.clone(), s1.clone()];
+
+        let r0 = Resource::new("https://test.com/?id=%%".to_string(), selectors.clone());
+        let r1 = Resource::new("https://test2.com".to_string(), selectors.clone());
+
+        let resources = vec![r0.clone(), r1.clone()];
+
+        let config = Config::new("test".to_string(), "".to_string(), resources.clone());
+
+        assert_eq!(config.name, "test");
+        assert_eq!(config.resources[0].url, "https://test.com/?id=%%");
+
+        // Test needs_parameters
+        assert_eq!(config.needs_parameters(), true);
+    }
 }
