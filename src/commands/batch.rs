@@ -2,7 +2,7 @@ use std::{ffi::OsStr, path::PathBuf};
 
 use crate::scalper::{grab, ParsedValue};
 use crate::structure::{Config, ConfigFormat};
-use anyhow::{anyhow, Ok, Result};
+use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
@@ -74,16 +74,26 @@ pub async fn command(args: Args) -> Result<()> {
     }
 
     // TODO: parse in a thread pool
-    for resource in config.resources {
-        let parsed_values = grab(resource.selectors, &resource.url).await?;
+    let mut tasks = Vec::default();
+    for r in config.resources {
+        tasks.push(tokio::spawn(grab(r.selectors, r.url)));
+    }
 
-        // TODO: Combine resources into one object and print it at the end (not in the loop)
-        if args.json {
-            println!("{}", generate_json(&parsed_values, resource.url));
-        } else {
-            println!("Table for resource:\n{}", resource.url);
-            println!("{}", generate_table(&parsed_values));
-        }
+    let mut outputs = Vec::default();
+    for task in tasks {
+        let mut parsed = match task.await.unwrap() {
+            Ok(v) => v,
+            Err(e) => {
+                panic!("Error while processing request to one of the URLs: {}", e);
+            }
+        };
+        outputs.append(&mut parsed);
+    }
+
+    if args.json {
+        println!("{}", generate_json(&outputs));
+    } else {
+        println!("{}", generate_table(&outputs));
     }
 
     Ok(())
@@ -104,18 +114,9 @@ fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
 }
 
 /// Generate json from parsed values
-fn generate_json(parsed_values: &Vec<ParsedValue>, url: String) -> String {
+fn generate_json(parsed_values: &Vec<ParsedValue>) -> String {
     // TODO: Create json with indentation
-    let mut json_data = JsonData {
-        url,
-        data: Vec::new(),
-    };
-
-    for parsed_value in parsed_values {
-        json_data.data.push(parsed_value.clone());
-    }
-
-    json!(json_data).to_string()
+    json!(parsed_values).to_string()
 }
 
 #[derive(Serialize)]
@@ -170,11 +171,11 @@ mod tests {
             },
         ];
 
-        let json = generate_json(&parsed_values, "url".to_string());
+        let json = generate_json(&parsed_values);
 
         assert_eq!(
             json,
-            r#"{"data":[{"name":"name1","value":"value1"},{"name":"name2","value":25.6}],"url":"url"}"#
+            r#"[{"name":"name1","value":"value1"},{"name":"name2","value":25.6}]"#
         );
     }
 }

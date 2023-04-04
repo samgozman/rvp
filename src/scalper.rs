@@ -42,9 +42,9 @@ pub async fn grab_one(selector: &str, from: &str) -> Result<String> {
 /// A vector of parsed values [Result<Vec<ParsedValue>>].
 pub async fn grab(
     selectors: Vec<crate::structure::Selector>,
-    from: &str,
+    from: String,
 ) -> Result<Vec<ParsedValue>> {
-    let document = fetch_html(from).await?;
+    let document = fetch_html(&from).await?;
     let mut values = Vec::new();
 
     for selector in selectors.iter() {
@@ -158,7 +158,7 @@ mod tests {
             path: "body > div > h1".to_string(),
             parsed_type: crate::structure::SelectorType::String,
         }];
-        let values = grab(selectors, "http://example.com").await?;
+        let values = grab(selectors, "http://example.com".to_string()).await?;
         assert_eq!(values.len(), 1);
         assert_eq!(&values[0].name, "title");
         match &values[0].value {
@@ -175,7 +175,7 @@ mod tests {
             path: "body > div > h1".to_string(),
             parsed_type: crate::structure::SelectorType::String,
         }];
-        if grab(selectors, "invalid-url").await.is_ok() {
+        if grab(selectors, "invalid-url".to_string()).await.is_ok() {
             panic!("should fail with invalid URL!");
         }
         Ok(())
@@ -188,7 +188,10 @@ mod tests {
             path: "body > div > h2".to_string(),
             parsed_type: crate::structure::SelectorType::String,
         }];
-        if grab(selectors, "http://example.com").await.is_err() {
+        if grab(selectors, "http://example.com".to_string())
+            .await
+            .is_err()
+        {
             panic!("should not fail with invalid selector and return an empty string!");
         }
         Ok(())
