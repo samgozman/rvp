@@ -8,7 +8,7 @@ use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
 use comfy_table::Table;
 use serde::Serialize;
-use serde_json::json;
+use serde_json::{json, to_string_pretty};
 
 /// Parse multiple data fields from a N resources defined in a config file
 #[derive(Parser)]
@@ -115,8 +115,8 @@ fn generate_table(parsed_values: &Vec<ParsedValue>) -> Table {
 
 /// Generate json from parsed values
 fn generate_json(parsed_values: &Vec<ParsedValue>) -> String {
-    // TODO: Create json with indentation
-    json!(parsed_values).to_string()
+    let json_str = json!(parsed_values);
+    to_string_pretty(&json_str).expect("Error while prettifying json!")
 }
 
 #[derive(Serialize)]
@@ -175,7 +175,8 @@ mod tests {
 
         assert_eq!(
             json,
-            r#"[{"name":"name1","value":"value1"},{"name":"name2","value":25.6}]"#
+            "[\n  {\n    \"name\": \"name1\",\n    \"value\": \"value1\"\n  },\n  \
+            {\n    \"name\": \"name2\",\n    \"value\": 25.6\n  }\n]"
         );
     }
 }
