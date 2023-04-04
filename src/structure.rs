@@ -267,7 +267,7 @@ impl Config {
     fn from_toml(data: &str) -> Result<Self> {
         match toml::from_str(data) {
             Ok(config) => Ok(config),
-            Err(_) => Err(anyhow!("Failed parsing TOML config!")),
+            Err(e) => Err(anyhow!("Failed parsing TOML config: {}", e)),
         }
     }
 
@@ -275,7 +275,7 @@ impl Config {
     fn from_json(data: &str) -> Result<Self> {
         match serde_json::from_str(data) {
             Ok(config) => Ok(config),
-            Err(_) => Err(anyhow!("Failed parsing JSON config!")),
+            Err(e) => Err(anyhow!("Failed parsing JSON config: {}", e)),
         }
     }
 }
