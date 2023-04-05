@@ -1,6 +1,5 @@
-use std::str::FromStr;
-
 use anyhow::{anyhow, Result};
+use regex::Regex;
 use reqwest::get;
 use scraper::{Html, Selector};
 use serde::Serialize;
@@ -52,7 +51,10 @@ pub async fn grab(
         let value = parse_value(&document, &parsed)?;
         let value = match selector.parsed_type {
             crate::structure::SelectorType::String => Value::String(value),
-            crate::structure::SelectorType::Number => Value::Number(Number::from_str(&value)?),
+            crate::structure::SelectorType::Number => {
+                let number = any_string_to_number(&value);
+                Value::Number(Number::from_f64(number).expect("failed to parse number"))
+            }
         };
         values.push(ParsedValue {
             name: selector.name.clone(),
@@ -105,6 +107,24 @@ fn parse_value(document: &Html, selector: &Selector) -> Result<String> {
     Ok(element.text().collect::<Vec<_>>().join(" "))
 }
 
+/// Converts a complex string to a number
+fn any_string_to_number(str: &String) -> f64 {
+    let value = str.to_lowercase();
+    let value = match str.contains(",") {
+        // to avoid confusion between 1.000,00 and 1000.00
+        true => value.replace(".", ""),
+        false => value,
+    };
+    let value = value.replace(",", ".");
+
+    // Remove all non-numeric characters except the dot
+    let re = Regex::new(r"[^\r\n0-9.]").unwrap();
+    let value = re.replace_all(&value, "");
+
+    // Convert to float
+    value.parse::<f64>().unwrap_or(f64::NAN)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,23 +144,6 @@ mod tests {
         fetch_html("invalid-url")
             .await
             .expect_err("should fail with invalid URL!");
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_parse_value() -> Result<()> {
-        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
-        let selector = Selector::parse("h1").unwrap();
-        let value = parse_value(&document, &selector)?;
-        assert_eq!(value, "Example");
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_parse_value_with_invalid_selector() -> Result<()> {
-        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
-        let selector = Selector::parse("h2").unwrap();
-        parse_value(&document, &selector).expect("should not fail with invalid selector!");
         Ok(())
     }
 
@@ -195,5 +198,34 @@ mod tests {
             panic!("should not fail with invalid selector and return an empty string!");
         }
         Ok(())
+    }
+
+    #[test]
+    fn test_parse_value() -> Result<()> {
+        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
+        let selector = Selector::parse("h1").unwrap();
+        let value = parse_value(&document, &selector)?;
+        assert_eq!(value, "Example");
+        Ok(())
+    }
+
+    #[test]
+    fn test_parse_value_with_invalid_selector() -> Result<()> {
+        let document = Html::parse_document("<html><body><h1>Example</h1></body></html>");
+        let selector = Selector::parse("h2").unwrap();
+        parse_value(&document, &selector).expect("should not fail with invalid selector!");
+        Ok(())
+    }
+
+    #[test]
+    fn test_any_string_to_number() {
+        let value = any_string_to_number(&"1.234,56".to_string());
+        assert_eq!(value, 1234.56);
+
+        let value = any_string_to_number(&"100_000,5".to_string());
+        assert_eq!(value, 100_000.5);
+
+        let value = any_string_to_number(&"100 000 $".to_string());
+        assert_eq!(value, 100_000.0);
     }
 }
