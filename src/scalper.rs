@@ -108,21 +108,34 @@ fn parse_value(document: &Html, selector: &Selector) -> Result<String> {
 }
 
 /// Converts a complex string to a number
-fn any_string_to_number(str: &String) -> f64 {
+fn any_string_to_number(str: &str) -> f64 {
     let value = str.to_lowercase();
-    let value = match str.contains(",") {
+    let value = match str.contains(',') {
         // to avoid confusion between 1.000,00 and 1000.00
-        true => value.replace(".", ""),
+        true => value.replace('.', ""),
         false => value,
     };
-    let value = value.replace(",", ".");
+    let value = value.replace(',', ".");
 
-    // Remove all non-numeric characters except the dot
+    // Remove all non-numeric characters except the dot and k/m/b
+    let re = Regex::new(r"[^\r\n0-9.kmb]").unwrap();
+    let value = re.replace_all(&value, "");
+
+    // If string ends with "k", "m" or "b"
+    let multiplier = match &value {
+        v if v.ends_with('k') => 1000.0,
+        v if v.ends_with('m') => 1000000.0,
+        v if v.ends_with('b') => 1000000000.0,
+        _ => 1.0,
+    };
+
+    // Remove the "k", "m" or "b" from the string
     let re = Regex::new(r"[^\r\n0-9.]").unwrap();
     let value = re.replace_all(&value, "");
 
     // Convert to float
-    value.parse::<f64>().unwrap_or(f64::NAN)
+    let num = value.parse::<f64>().unwrap_or(f64::NAN);
+    num * multiplier
 }
 
 #[cfg(test)]
@@ -227,5 +240,17 @@ mod tests {
 
         let value = any_string_to_number(&"100 000 $".to_string());
         assert_eq!(value, 100_000.0);
+
+        let value = any_string_to_number(&"1.5k$".to_string());
+        assert_eq!(value, 1500.0);
+
+        let value = any_string_to_number(&"1.5m ¢".to_string());
+        assert_eq!(value, 1_500_000.0);
+
+        let value = any_string_to_number(&"1.5b CAD$".to_string());
+        assert_eq!(value, 1_500_000_000.0);
+
+        let value = any_string_to_number(&"Not a Number".to_string());
+        assert!(value.is_nan());
     }
 }
