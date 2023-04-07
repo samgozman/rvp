@@ -320,10 +320,10 @@ mod tests {
             SelectorType::Number,
         );
 
-        let selectors = vec![s0.clone(), s1.clone()];
+        let selectors = vec![s0, s1];
 
         let r0 = Resource::new("https://test.com/?id=%%".to_string(), selectors.clone());
-        let r1 = Resource::new("https://test2.com".to_string(), selectors.clone());
+        let r1 = Resource::new("https://test2.com".to_string(), selectors);
 
         let resources = vec![r0.clone(), r1.clone()];
 
@@ -351,8 +351,8 @@ mod tests {
         assert_eq!(r2.url, "https://test.com/?id=test");
 
         // Test needs_parameter
-        assert_eq!(r0.needs_parameter(), true);
-        assert_eq!(r1.needs_parameter(), false);
+        assert!(r0.needs_parameter());
+        assert!(!r1.needs_parameter());
     }
 
     #[test]
@@ -364,19 +364,19 @@ mod tests {
             SelectorType::Number,
         );
 
-        let selectors = vec![s0.clone(), s1.clone()];
+        let selectors = vec![s0, s1];
 
         let r0 = Resource::new("https://test.com/?id=%%".to_string(), selectors.clone());
-        let r1 = Resource::new("https://test2.com".to_string(), selectors.clone());
+        let r1 = Resource::new("https://test2.com".to_string(), selectors);
 
-        let resources = vec![r0.clone(), r1.clone()];
+        let resources = vec![r0, r1];
 
-        let config = Config::new("test".to_string(), "".to_string(), resources.clone());
+        let config = Config::new("test".to_string(), "".to_string(), resources);
 
         assert_eq!(config.name, "test");
         assert_eq!(config.resources[0].url, "https://test.com/?id=%%");
 
         // Test needs_parameters
-        assert_eq!(config.needs_parameters(), true);
+        assert!(config.needs_parameters());
     }
 }

@@ -232,25 +232,25 @@ mod tests {
 
     #[test]
     fn test_any_string_to_number() {
-        let value = any_string_to_number(&"1.234,56".to_string());
+        let value = any_string_to_number("1.234,56");
         assert_eq!(value, 1234.56);
 
-        let value = any_string_to_number(&"100_000,5".to_string());
+        let value = any_string_to_number("100_000,5");
         assert_eq!(value, 100_000.5);
 
-        let value = any_string_to_number(&"100 000 $".to_string());
+        let value = any_string_to_number("100 000 $");
         assert_eq!(value, 100_000.0);
 
-        let value = any_string_to_number(&"1.5k$".to_string());
+        let value = any_string_to_number("1.5k$");
         assert_eq!(value, 1500.0);
 
-        let value = any_string_to_number(&"1.5m ¢".to_string());
+        let value = any_string_to_number("1.5m ¢");
         assert_eq!(value, 1_500_000.0);
 
-        let value = any_string_to_number(&"1.5b CAD$".to_string());
+        let value = any_string_to_number("1.5b CAD$");
         assert_eq!(value, 1_500_000_000.0);
 
-        let value = any_string_to_number(&"Not a Number".to_string());
+        let value = any_string_to_number("Not a Number");
         assert!(value.is_nan());
     }
 }
