@@ -12,6 +12,10 @@ keywords = ["rvp", "parser", "cli"]
 rust-version = "1.68.0"
 include = ["src/**/*", "LICENSE", "README.md"]
 
+[[bin]]
+name = "rvp"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
 anyhow = "1.0.69"
