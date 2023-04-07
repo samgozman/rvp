@@ -16,6 +16,10 @@ include = ["src/**/*", "LICENSE", "README.md"]
 name = "rvp"
 path = "src/main.rs"
 
+[profile.release]
+lto = true
+strip = true
+
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
 anyhow = "1.0.69"
