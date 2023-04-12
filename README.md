@@ -49,10 +49,20 @@ In complex mode, you can create configuration files for each site that you want 
 🔺 // Link to the example config file
 
 ```bash
-rvp batch --path ./stock-info.toml --params AAPL --json
+rvp batch --path ./stock-info.toml --one-param AAPL --json
 ```
 
-> `--params` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. If you have multiple resources to parse, you can specify them as a space-separated list.
+> `--one-param` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. With this option, you can specify a **single parameter** that will be passed for all resources with the `%%` placeholder in the URL.
+
+Or for example, you can run the following command to parse the weather forecast for multiple cities:
+
+🔺 // Link to the example config file
+
+```bash
+rvp batch --path ./weather.toml --params "new-york/new-york" "california/los-angeles" "illinois/chicago" --json
+```
+
+> `--params` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. If you have **multiple resources** to parse, you can specify them as a **space-separated list**.
 
 RVP's batch mode allows you to retrieve information from multiple sources and multiple values at once, making it a powerful tool for web scraping and data extraction.
 
