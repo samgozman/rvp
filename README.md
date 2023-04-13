@@ -44,19 +44,76 @@ Output: `Example Domain`
 
 ### Complex usage
 
-In complex mode, you can create configuration files for each site that you want to parse. The configuration files specify the CSS selectors for the values you want to extract from the web page. You can then use RVP to parse multiple values from multiple sources using the configuration files. For example, you can run the following command to parse the stock information from multiple sites:
+In complex mode, you can create configuration files for each site that you want to parse. The configuration files specify the CSS selectors for the values you want to extract from the web page. You can then use RVP to parse multiple values from multiple sources using the configuration files.
 
-🔺 // Link to the example config file
+#### Example 1: Parse stock information
+
+Example config file: [stock.toml](examples/stock.toml)
+
+For example, you can run the following command to parse the stock information from multiple sites:
 
 ```bash
-rvp batch --path ./stock-info.toml --one-param AAPL --json
+rvp batch --path ./stock.toml --one-param AAPL --json
 ```
+
+<details>
+
+  <summary>Output</summary>
+  
+  ```json
+    [
+      {
+        "name": "Name",
+        "value": "Apple Inc."
+      },
+      {
+        "name": "Market Cap",
+        "value": "2519.25B"
+      },
+      {
+        "name": "Price ($)",
+        "value": 160.1
+      },
+      {
+        "name": "Dividend ($)",
+        "value": 0.92
+      },
+      {
+        "name": "P/E",
+        "value": 27.2
+      },
+      {
+        "name": "% of Float Shorted",
+        "value": 0.71
+      },
+      {
+        "name": "Industry",
+        "value": "Computers/Consumer Electronics"
+      },
+      {
+        "name": "Sector",
+        "value": "Technology"
+      },
+      {
+        "name": "Put/Call Vol Ratio",
+        "value": 0.77
+      },
+      {
+        "name": "Put/Call OI Ratio ",
+        "value": 1.01
+      }
+    ]
+  ```
+
+</details>
 
 > `--one-param` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. With this option, you can specify a **single parameter** that will be passed for all resources with the `%%` placeholder in the URL.
 
-Or for example, you can run the following command to parse the weather forecast for multiple cities:
+#### Example 2: Get weather forecasts for multiple cities
 
 🔺 // Link to the example config file
+
+You can run the following command to parse the weather forecast for multiple cities:
 
 ```bash
 rvp batch --path ./weather.toml --params "new-york/new-york" "california/los-angeles" "illinois/chicago" --json
