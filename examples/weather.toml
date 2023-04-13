@@ -1,0 +1,38 @@
+name = "weather"
+description = "Get the weather for multiple locations"
+
+[[resources]]
+url = "https://www.timeanddate.com/weather/%%"
+
+[[resources.selectors]]
+path = "body > div.main-content-div > header > div.bn-header__wrap.fixed > div > section.headline-banner__wrap > div > h1"
+name = "Title"
+parsed_type = "String"
+
+[[resources.selectors]]
+path = "#qlook > div.h2"
+name = "Temperature"
+parsed_type = "Number"
+
+[[resources.selectors]]
+path = "#qlook > p:nth-child(4)"
+name = "Condition"
+parsed_type = "String"
+
+[[resources]]
+url = "https://www.timeanddate.com/weather/%%"
+
+[[resources.selectors]]
+path = "body > div.main-content-div > header > div.bn-header__wrap.fixed > div > section.headline-banner__wrap > div > h1"
+name = "Title"
+parsed_type = "String"
+
+[[resources.selectors]]
+path = "#qlook > div.h2"
+name = "Temperature"
+parsed_type = "Number"
+
+[[resources.selectors]]
+path = "#qlook > p:nth-child(4)"
+name = "Condition"
+parsed_type = "String"
