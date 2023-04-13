@@ -1,0 +1,64 @@
+name = "stocks"
+description = "Gather stock information from different sources"
+
+[[resources]]
+url = "https://finviz.com/quote.ashx?t=%%"
+
+[[resources.selectors]]
+path = "body > div:nth-child(10) > div > table:nth-child(1) > tbody > tr > td > table.fullview-title > tbody > tr:nth-child(2) > td > a > b"
+name = "Name"
+parsed_type = "String"
+
+[[resources.selectors]]
+path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(2) > td:nth-child(2) > b"
+name = "Market Cap"
+parsed_type = "String"
+
+[[resources.selectors]]
+path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(11) > td:nth-child(12) > b"
+name = "Price ($)"
+parsed_type = "Number"
+
+[[resources.selectors]]
+path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(7) > td:nth-child(2) > b"
+name = "Dividend ($)"
+parsed_type = "Number"
+
+[[resources.selectors]]
+path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(1) > td:nth-child(4) > b"
+name = "P/E"
+parsed_type = "Number"
+
+[[resources]]
+url = "https://www.marketwatch.com/investing/stock/%%"
+
+[[resources.selectors]]
+path = "#maincontent > div.region.region--primary > div:nth-child(2) > div.group.group--elements.left > div > ul > li:nth-child(15) > span.primary"
+name = "% of Float Shorted"
+parsed_type = "Number"
+
+[[resources]]
+url = "https://www.marketwatch.com/investing/stock/%%/company-profile?mod=mw_quote_tab"
+
+[[resources.selectors]]
+path = "#maincontent > div.region.region--primary > div.column.column--aside > div.group.left > div > ul > li:nth-child(1) > span"
+name = "Industry"
+parsed_type = "String"
+
+[[resources.selectors]]
+path = "#maincontent > div.region.region--primary > div.column.column--aside > div.group.left > div > ul > li:nth-child(2) > span"
+name = "Sector"
+parsed_type = "String"
+
+[[resources]]
+url = "https://www.barchart.com/stocks/quotes/%%/put-call-ratios"
+
+[[resources.selectors]]
+path = "#main-content-column > div > div.bc-futures-options-quotes-totals > div > div > div > div:nth-child(1) > div:nth-child(3) > strong"
+name = "Put/Call Vol Ratio"
+parsed_type = "Number"
+
+[[resources.selectors]]
+path = "#main-content-column > div > div.bc-futures-options-quotes-totals > div > div > div > div:nth-child(2) > div:nth-child(3) > strong"
+name = "Put/Call OI Ratio "
+parsed_type = "Number"
