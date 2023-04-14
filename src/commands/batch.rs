@@ -36,7 +36,7 @@ pub struct Args {
     params: Option<Vec<String>>,
 
     /// (Optional) Single parameter to be passed to all resources.
-    /// 
+    ///
     /// This argument is mutually exclusive with `params`.
     ///
     /// Example:
