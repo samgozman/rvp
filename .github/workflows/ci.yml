@@ -21,6 +21,7 @@ jobs:
         run: cargo fmt -- --check
 
   clippy:
+    needs: [fmt]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -38,6 +39,7 @@ jobs:
         timeout-minutes: 10
 
   test:
+    needs: [fmt]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
