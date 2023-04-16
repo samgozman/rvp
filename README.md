@@ -18,9 +18,7 @@ RVP also can parse complex numbers from web pages, including numbers with suffix
 
 ## Example
 
-🔺 // Place for gif with example
-
-🔺 // Links to example config files
+https://user-images.githubusercontent.com/3392560/232331625-d4f23f47-672e-4330-a65e-c01556cef663.mp4
 
 ## Installation
 
