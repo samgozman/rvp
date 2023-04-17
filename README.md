@@ -24,7 +24,30 @@ https://user-images.githubusercontent.com/3392560/232331625-d4f23f47-672e-4330-a
 
 RVP currently supports Intel Macs, M1 ARM Macs, and Linux. The tool has been tested on these platforms and is expected to work on other Unix-like systems as well. If you encounter any issues running RVP on your system, please let me know by creating an issue on the GitHub repository.
 
-🔺 // Add manual installation instructions for macOS and Linux
+<details>
+
+  <summary>Unix (MacOs/Linux) manual install</summary>
+
+  This instruction works for both Linux and MacOS.
+
+  Download the latest release from the [releases page](https://github.com/samgozman/rvp/releases) for your platform.
+  For example, if you are using an Intel Mac, download the `rvp-x86_64-apple-darwin.tar.gz` file. For an M1 Mac, download the `rvp-aarch64-apple-darwin.tar.gz` file.
+
+  Extract bin file from the archive:
+  
+  ```bash
+  tar -xzvf rvp-aarch64-apple-darwin.tar
+  ```
+
+  Move the `rvp` binary to `/usr/local/bin`:
+  
+  ```bash
+  sudo mv rvp /usr/local/bin
+  ```
+
+  > sudo is required to move the binary to `/usr/local/bin`.
+
+</details>
 
 ## Usage
 
