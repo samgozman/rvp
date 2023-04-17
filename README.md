@@ -49,6 +49,22 @@ RVP currently supports Intel Macs, M1 ARM Macs, and Linux. The tool has been tes
 
 </details>
 
+<details>
+
+  <summary>⚠️ Warning: Gatekeeper message for MacOs</summary>
+
+  <img width="372" alt="Gatekeeper message for RVP" src="https://user-images.githubusercontent.com/3392560/232388132-b9a5d99e-6412-4262-a666-0305216866a6.png">
+
+  Please note that RVP macOS app doesn't have an Apple developer certificate, which may cause it to be blocked by Gatekeeper. To run the app, you need to temporarily disable Gatekeeper for RVP by following these steps:
+  
+  1. Open the System Preferences app on your Mac.
+  2. Click on the "Privacy & Security" icon and scroll down a little bit.
+  3. Click on "Allow Anyway" under the `"rvp" was blocked..` message.
+  
+  <img width="827" alt="Privacy & Security settings" src="https://user-images.githubusercontent.com/3392560/232390157-6a97eecb-3674-4009-8c36-1a7c6c900d90.png">
+
+</details>
+
 ## Usage
 
 RVP can be used in two modes: simple mode and complex mode.
