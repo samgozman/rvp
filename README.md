@@ -26,7 +26,9 @@ RVP currently supports Intel Macs, M1 ARM Macs, and Linux. The tool has been tes
 
 <details>
 
-  <summary>MacOs manual install</summary>
+  <summary>Unix (MacOs/Linux) manual install</summary>
+
+  This instruction works for both Linux and MacOS.
 
   Download the latest release from the [releases page](https://github.com/samgozman/rvp/releases) for your platform.
   For example, if you are using an Intel Mac, download the `rvp-x86_64-apple-darwin.tar.gz` file. For an M1 Mac, download the `rvp-aarch64-apple-darwin.tar.gz` file.
