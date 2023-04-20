@@ -18,7 +18,7 @@ RVP also can parse complex numbers from web pages, including numbers with suffix
 
 ## Example
 
-https://user-images.githubusercontent.com/3392560/232331625-d4f23f47-672e-4330-a65e-c01556cef663.mp4
+https://user-images.githubusercontent.com/3392560/233373264-0f389823-ab05-43e3-9cbe-bc15b1507371.mp4
 
 ## Installation
 
