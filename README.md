@@ -28,7 +28,7 @@ RVP currently supports Intel Macs, M1 ARM Macs, and Linux. The tool has been tes
 
   <summary>Unix (MacOs/Linux) manual install</summary>
 
-  This instruction works for both Linux and MacOS.
+  This instruction works for both Linux and macOS.
 
   Download the latest release from the [releases page](https://github.com/samgozman/rvp/releases) for your platform.
   For example, if you are using an Intel Mac, download the `rvp-x86_64-apple-darwin.tar.gz` file. For an M1 Mac, download the `rvp-aarch64-apple-darwin.tar.gz` file.
@@ -182,7 +182,7 @@ rvp batch --path ./weather.toml --params "israel/tel-aviv" "israel/jerusalem"
 
 > `--params` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. If you have **multiple resources** to parse, you can specify them as a **space-separated list**.
 
-RVP's batch mode allows you to retrieve information from multiple sources and multiple values at once, making it a powerful tool for web scraping and data extraction.
+RVP batch mode allows you to retrieve information from multiple sources and multiple values at once, making it a powerful tool for web scraping and data extraction.
 
 ## Create config file
 
