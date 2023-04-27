@@ -31,7 +31,7 @@ pub enum SelectorType {
 
 impl SelectorType {
     /// It returns a vector of all the possible [ParsedType]s
-    pub fn to_vec() -> Vec<SelectorType> {
+    pub fn list_as_vec() -> Vec<SelectorType> {
         vec![SelectorType::String, SelectorType::Number]
     }
 
