@@ -225,7 +225,7 @@ impl Config {
         };
 
         let full_path = self.get_full_path(cf);
-        std::fs::write(full_path.clone(), data)?;
+        fs::write(full_path.clone(), data)?;
 
         Ok(full_path)
     }
