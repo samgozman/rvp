@@ -28,6 +28,7 @@ pub async fn grab_one(selector: &str, from: &str) -> Result<String> {
     let selector = Selector::parse(selector).unwrap();
     parse_value(&document, &selector)
 }
+
 /// It takes a list of selectors and a URL, fetches the HTML from the URL, and then parses the HTML
 /// using the selectors
 ///
@@ -53,7 +54,10 @@ pub async fn grab(
             crate::structure::SelectorType::String => Value::String(value),
             crate::structure::SelectorType::Number => {
                 let number = any_string_to_number(&value);
-                Value::Number(Number::from_f64(number).expect("failed to parse number"))
+                Value::Number(
+                    Number::from_f64(number)
+                        .expect(format!("failed to parse number for \"{}\"", &selector.name).as_str()),
+                )
             }
         };
         values.push(ParsedValue {
