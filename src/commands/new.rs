@@ -17,7 +17,7 @@ use inquire::{
 pub struct Args {
     /// Name of the config file to create.
     ///
-    ///  *Optional.* If not provided, the default name will be used.
+    /// (*Optional*) If not provided, the default name will be used.
     #[arg(short, long, value_name = "NAME")]
     name: Option<String>,
 }

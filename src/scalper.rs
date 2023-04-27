@@ -17,8 +17,8 @@ pub struct ParsedValue {
 ///
 /// Arguments:
 ///
-/// * `selector`: The CSS selector (full path from root) to use to grab the value.
-/// * `from`: The URL to fetch the HTML from
+/// - `selector`: The CSS selector (full path from root) to use to grab the value.
+/// - `from`: The URL to fetch the HTML from
 ///
 /// Returns:
 ///
@@ -33,8 +33,8 @@ pub async fn grab_one(selector: &str, from: &str) -> Result<String> {
 ///
 /// Arguments:
 ///
-/// * `selectors`: A vector of CSS selectors.
-/// * `from`: The URL to fetch the HTML from.
+/// - `selectors`: A vector of CSS selectors.
+/// - `from`: The URL to fetch the HTML from.
 ///
 /// Returns:
 ///
@@ -69,7 +69,7 @@ pub async fn grab(
 ///
 /// Arguments:
 ///
-/// * `url`: &str - The URL to fetch the HTML from.
+/// - `url`: &str - The URL to fetch the HTML from.
 ///
 /// Returns:
 ///
@@ -90,8 +90,8 @@ async fn fetch_html(url: &str) -> Result<Html> {
 ///
 /// Arguments:
 ///
-/// * `document`: The HTML document we're parsing.
-/// * `selector`: The CSS selector (full path from root) to use to find the element.
+/// - `document`: The HTML document we're parsing.
+/// - `selector`: The CSS selector (full path from root) to use to find the element.
 ///
 /// Returns:
 ///

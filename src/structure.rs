@@ -195,8 +195,8 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `path`: The path to the file to read from.
-    /// * `cf`: [ConfigFormat] - This is the format of the config file.
+    /// - `path`: The path to the file to read from.
+    /// - `cf`: [ConfigFormat] - This is the format of the config file.
     ///
     /// Returns:
     ///
@@ -213,7 +213,7 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    /// - `cf`: [ConfigFormat] - This is the format that you want to save the config in.
     ///
     /// Returns:
     ///
@@ -234,7 +234,7 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    /// - `cf`: [ConfigFormat] - This is the format that you want to save the config in.
     ///
     /// Returns:
     ///
