@@ -76,10 +76,11 @@ pub async fn command(args: Args) -> Result<()> {
 
         if args.params.is_some() {
             let params = args.params.unwrap();
-
-            if config.resources.len() != params.len() {
+            let resources_len = config.resources.len();
+            if resources_len != params.len() {
                 return Err(anyhow!(
-                    "The number of parameters does not match the number of resources!"
+                    "The number of parameters does not match the number of resources ({})!",
+                    resources_len
                 ));
             }
 
