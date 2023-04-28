@@ -1,7 +1,7 @@
 use std::{ffi::OsStr, path::PathBuf};
 
 use crate::scalper::{grab, ParsedValue};
-use crate::structure::{Config, ConfigFormat};
+use crate::structure::{Config, ConfigFormat, Resource};
 use anyhow::{anyhow, Result};
 use clap::{value_parser, Parser};
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
@@ -49,6 +49,21 @@ pub struct Args {
     #[arg(long, conflicts_with = "params")]
     one_param: Option<String>,
 
+    /// (Optional) Used with `--params` to repeat each param for all resources. If you specify 3
+    /// params and 2 resources, this 2 resources will be parsed 3 times (for each param).
+    /// This is useful when you want to parse the same resource with different parameters.
+    /// (e.g. stock quotes for different companies)
+    ///
+    /// This argument is mutually exclusive with `--one-param`.
+    ///
+    /// Example:
+    ///
+    /// ```
+    /// --params param1 param2 -r
+    /// ```
+    #[arg(short, long, conflicts_with = "one_param")]
+    repeat: bool,
+
     /// Output the data in JSON format
     #[arg(long)]
     json: bool,
@@ -76,15 +91,39 @@ pub async fn command(args: Args) -> Result<()> {
 
         if args.params.is_some() {
             let params = args.params.unwrap();
+            let resources_len = config.resources.len();
+            if params.is_empty() {
+                return Err(anyhow!("You need to specify at least one parameter!"));
+            }
 
-            if config.resources.len() != params.len() {
+            if resources_len != params.len() && !args.repeat {
                 return Err(anyhow!(
-                    "The number of parameters does not match the number of resources!"
+                    "The number of parameters does not match the number of resources ({})!",
+                    resources_len
                 ));
             }
 
-            for (i, param) in params.iter().enumerate() {
-                config.resources[i].mut_url_with_param(param);
+            if args.repeat {
+                // Duplicate resources for each param and the same number of params
+                let mut duplicated_resources: Vec<Resource> = Vec::default();
+                let mut duplicated_params: Vec<String> = Vec::default();
+                for param in params.iter() {
+                    for r in config.resources.iter() {
+                        duplicated_params.push(param.clone());
+                        duplicated_resources.push(r.clone());
+                    }
+                }
+                config.resources = duplicated_resources;
+
+                // Mutate duplicated resources urls with duplicated params
+                for (i, param) in duplicated_params.iter().enumerate() {
+                    config.resources[i].mut_url_with_param(param);
+                }
+            } else {
+                // Mutate resource urls with params
+                for (i, param) in params.iter().enumerate() {
+                    config.resources[i].mut_url_with_param(param);
+                }
             }
         }
 

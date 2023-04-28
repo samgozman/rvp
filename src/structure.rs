@@ -31,7 +31,7 @@ pub enum SelectorType {
 
 impl SelectorType {
     /// It returns a vector of all the possible [ParsedType]s
-    pub fn to_vec() -> Vec<SelectorType> {
+    pub fn list_as_vec() -> Vec<SelectorType> {
         vec![SelectorType::String, SelectorType::Number]
     }
 
@@ -195,8 +195,8 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `path`: The path to the file to read from.
-    /// * `cf`: [ConfigFormat] - This is the format of the config file.
+    /// - `path`: The path to the file to read from.
+    /// - `cf`: [ConfigFormat] - This is the format of the config file.
     ///
     /// Returns:
     ///
@@ -213,7 +213,7 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    /// - `cf`: [ConfigFormat] - This is the format that you want to save the config in.
     ///
     /// Returns:
     ///
@@ -225,7 +225,7 @@ impl Config {
         };
 
         let full_path = self.get_full_path(cf);
-        std::fs::write(full_path.clone(), data)?;
+        fs::write(full_path.clone(), data)?;
 
         Ok(full_path)
     }
@@ -234,7 +234,7 @@ impl Config {
     ///
     /// Arguments:
     ///
-    /// * `cf`: [ConfigFormat] - This is the format that you want to save the config in.
+    /// - `cf`: [ConfigFormat] - This is the format that you want to save the config in.
     ///
     /// Returns:
     ///

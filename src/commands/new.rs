@@ -17,7 +17,7 @@ use inquire::{
 pub struct Args {
     /// Name of the config file to create.
     ///
-    ///  *Optional.* If not provided, the default name will be used.
+    /// (*Optional*) If not provided, the default name will be used.
     #[arg(short, long, value_name = "NAME")]
     name: Option<String>,
 }
@@ -84,7 +84,7 @@ fn add_selectors() -> Result<Vec<Selector>> {
             .with_validator(required!("This field is required"))
             .with_help_message("e.g. title")
             .prompt()?;
-        let parsed_type = Select::new("Selector type:", SelectorType::to_vec()).prompt()?;
+        let parsed_type = Select::new("Selector type:", SelectorType::list_as_vec()).prompt()?;
         selectors.push(Selector::new(path, name, parsed_type));
 
         let add_another = Confirm::new("Add another Selector?")

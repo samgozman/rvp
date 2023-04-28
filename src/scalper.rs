@@ -17,8 +17,8 @@ pub struct ParsedValue {
 ///
 /// Arguments:
 ///
-/// * `selector`: The CSS selector (full path from root) to use to grab the value.
-/// * `from`: The URL to fetch the HTML from
+/// - `selector`: The CSS selector (full path from root) to use to grab the value.
+/// - `from`: The URL to fetch the HTML from
 ///
 /// Returns:
 ///
@@ -28,13 +28,14 @@ pub async fn grab_one(selector: &str, from: &str) -> Result<String> {
     let selector = Selector::parse(selector).unwrap();
     parse_value(&document, &selector)
 }
+
 /// It takes a list of selectors and a URL, fetches the HTML from the URL, and then parses the HTML
 /// using the selectors
 ///
 /// Arguments:
 ///
-/// * `selectors`: A vector of CSS selectors.
-/// * `from`: The URL to fetch the HTML from.
+/// - `selectors`: A vector of CSS selectors.
+/// - `from`: The URL to fetch the HTML from.
 ///
 /// Returns:
 ///
@@ -53,7 +54,15 @@ pub async fn grab(
             crate::structure::SelectorType::String => Value::String(value),
             crate::structure::SelectorType::Number => {
                 let number = any_string_to_number(&value);
-                Value::Number(Number::from_f64(number).expect("failed to parse number"))
+
+                let value: Value = if number.is_nan() {
+                    Value::String("NaN".to_string())
+                } else {
+                    Value::Number(Number::from_f64(number).unwrap_or_else(|| {
+                        panic!("failed to parse number for \"{}\"", &selector.name)
+                    }))
+                };
+                value
             }
         };
         values.push(ParsedValue {
@@ -69,7 +78,7 @@ pub async fn grab(
 ///
 /// Arguments:
 ///
-/// * `url`: &str - The URL to fetch the HTML from.
+/// - `url`: &str - The URL to fetch the HTML from.
 ///
 /// Returns:
 ///
@@ -90,8 +99,8 @@ async fn fetch_html(url: &str) -> Result<Html> {
 ///
 /// Arguments:
 ///
-/// * `document`: The HTML document we're parsing.
-/// * `selector`: The CSS selector (full path from root) to use to find the element.
+/// - `document`: The HTML document we're parsing.
+/// - `selector`: The CSS selector (full path from root) to use to find the element.
 ///
 /// Returns:
 ///
@@ -209,6 +218,28 @@ mod tests {
             .is_err()
         {
             panic!("should not fail with invalid selector and return an empty string!");
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab_with_invalid_selector_type() -> Result<()> {
+        let selectors = vec![crate::structure::Selector {
+            name: "title".to_string(),
+            path: "body > div > h2".to_string(),
+            parsed_type: crate::structure::SelectorType::Number,
+        }];
+        let grabbed = grab(selectors, "http://example.com".to_string()).await;
+        if grabbed.is_err() {
+            panic!("should not fail with invalid selector and return an empty string!");
+        }
+
+        let values = grabbed.unwrap();
+        assert_eq!(values.len(), 1);
+        assert_eq!(&values[0].name, "title");
+        match &values[0].value {
+            Value::String(value) => assert_eq!(value, "NaN"),
+            _ => panic!("value should be a string!"),
         }
         Ok(())
     }
