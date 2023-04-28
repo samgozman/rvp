@@ -180,7 +180,112 @@ rvp batch --path ./weather.toml --params "israel/tel-aviv" "israel/jerusalem"
 
 </details>
 
-> `--params` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL. If you have **multiple resources** to parse, you can specify them as a **space-separated list**.
+> `--params` option can be specified for each site in the config file. It simply replaces the `%%` placeholder in the URL.
+> If you have **multiple resources** to parse, you can specify them as a **space-separated list**.
+
+#### Example 3: Parse stock information from multiple sources for the multiple stocks at once
+
+Example config file: [stock.toml](examples/stock.toml)
+
+```bash
+rvp batch -p ./stock.toml --params AAPL MSFT -r --json
+```
+
+<details>
+
+  <summary>Output</summary>
+  
+  ```json
+    [
+      {
+        "name": "Name",
+        "value": "Apple Inc."
+      },
+      {
+        "name": "Market Cap",
+        "value": "2690.89B"
+      },
+      {
+        "name": "Price ($)",
+        "value": 168.29
+      },
+      {
+        "name": "Dividend ($)",
+        "value": 0.92
+      },
+      {
+        "name": "P/E",
+        "value": 28.61
+      },
+      {
+        "name": "% of Float Shorted",
+        "value": 0.73
+      },
+      {
+        "name": "Industry",
+        "value": "Computers/Consumer Electronics"
+      },
+      {
+        "name": "Sector",
+        "value": "Technology"
+      },
+      {
+        "name": "Put/Call Vol Ratio",
+        "value": 0.85
+      },
+      {
+        "name": "Put/Call OI Ratio ",
+        "value": 1.01
+      },
+      {
+        "name": "Name",
+        "value": "Microsoft Corporation"
+      },
+      {
+        "name": "Market Cap",
+        "value": "2271.87B"
+      },
+      {
+        "name": "Price ($)",
+        "value": 305.22
+      },
+      {
+        "name": "Dividend ($)",
+        "value": 2.72
+      },
+      {
+        "name": "P/E",
+        "value": 33.89
+      },
+      {
+        "name": "% of Float Shorted",
+        "value": 0.55
+      },
+      {
+        "name": "Industry",
+        "value": "Software"
+      },
+      {
+        "name": "Sector",
+        "value": "Technology"
+      },
+      {
+        "name": "Put/Call Vol Ratio",
+        "value": 0.82
+      },
+      {
+        "name": "Put/Call OI Ratio ",
+        "value": 1.0
+      }
+    ]
+  ```
+
+</details>
+
+> '-r, --repeat' flag is used to repeat the parameters for each resource.
+> The number of parameters you provide will multiply the number of resources.
+> So if you have 2 resources (r1, r2) and 2 parameters (p1, p2), you will get 4 results as:
+> r1-p1, r2-p1, r1-p2, r2-p2
 
 RVP batch mode allows you to retrieve information from multiple sources and multiple values at once, making it a powerful tool for web scraping and data extraction.
 
