@@ -54,10 +54,15 @@ pub async fn grab(
             crate::structure::SelectorType::String => Value::String(value),
             crate::structure::SelectorType::Number => {
                 let number = any_string_to_number(&value);
-                Value::Number(
-                    Number::from_f64(number)
-                        .expect(format!("failed to parse number for \"{}\"", &selector.name).as_str()),
-                )
+                let value: Value;
+                if number.is_nan() {
+                    value = Value::String("NaN".to_string());
+                } else {
+                    value = Value::Number(Number::from_f64(number).expect(
+                        format!("failed to parse number for \"{}\"", &selector.name).as_str(),
+                    ))
+                }
+                value
             }
         };
         values.push(ParsedValue {
@@ -213,6 +218,28 @@ mod tests {
             .is_err()
         {
             panic!("should not fail with invalid selector and return an empty string!");
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_grab_with_invalid_selector_type() -> Result<()> {
+        let selectors = vec![crate::structure::Selector {
+            name: "title".to_string(),
+            path: "body > div > h2".to_string(),
+            parsed_type: crate::structure::SelectorType::Number,
+        }];
+        let grabbed = grab(selectors, "http://example.com".to_string()).await;
+        if grabbed.is_err() {
+            panic!("should not fail with invalid selector and return an empty string!");
+        }
+
+        let values = grabbed.unwrap();
+        assert_eq!(values.len(), 1);
+        assert_eq!(&values[0].name, "title");
+        match &values[0].value {
+            Value::String(value) => assert_eq!(value, "NaN"),
+            _ => panic!("value should be a string!"),
         }
         Ok(())
     }
