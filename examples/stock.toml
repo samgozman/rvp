@@ -5,27 +5,27 @@ description = "Gather stock information from different sources"
 url = "https://finviz.com/quote.ashx?t=%%"
 
 [[resources.selectors]]
-path = "body > div:nth-child(10) > div > table:nth-child(1) > tbody > tr > td > table.fullview-title > tbody > tr:nth-child(2) > td > a > b"
+path = "body > div.content > div.ticker-wrapper tbody > tr > td > table.fullview-title > tbody > tr:nth-child(2) > td > a > b"
 name = "Name"
 parsed_type = "String"
 
 [[resources.selectors]]
-path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(2) > td:nth-child(2) > b"
+path = "div.ticker-wrapper table:nth-child(1) div.snapshot-table-wrapper > table > tbody > tr:nth-child(2) > td:nth-child(2) > b"
 name = "Market Cap"
 parsed_type = "String"
 
 [[resources.selectors]]
-path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(11) > td:nth-child(12) > b"
+path = "div.ticker-wrapper table:nth-child(1) div.snapshot-table-wrapper > table > tbody > tr:nth-child(11) > td:nth-child(12) > b"
 name = "Price ($)"
 parsed_type = "Number"
 
 [[resources.selectors]]
-path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(7) > td:nth-child(2) > b"
+path = "div.ticker-wrapper table:nth-child(1) div.snapshot-table-wrapper > table > tbody > tr:nth-child(7) > td:nth-child(2) > b"
 name = "Dividend ($)"
 parsed_type = "Number"
 
 [[resources.selectors]]
-path = "body > div:nth-child(10) > div > table.snapshot-table2 > tbody > tr:nth-child(1) > td:nth-child(4) > b"
+path = "div.ticker-wrapper table:nth-child(1) div.snapshot-table-wrapper > table > tbody > tr:nth-child(1) > td:nth-child(4) > b"
 name = "P/E"
 parsed_type = "Number"
 
