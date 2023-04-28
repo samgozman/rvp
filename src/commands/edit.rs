@@ -111,7 +111,8 @@ fn edit_selectors(config: &mut Config, resource: &Resource) -> Result<()> {
                     .with_validator(required!("This field is required"))
                     .with_help_message("e.g. title")
                     .prompt()?;
-                let parsed_type = Select::new("Selector type:", SelectorType::list_as_vec()).prompt()?;
+                let parsed_type =
+                    Select::new("Selector type:", SelectorType::list_as_vec()).prompt()?;
                 config.resources[resource]
                     .selectors
                     .push(Selector::new(path, name, parsed_type));
