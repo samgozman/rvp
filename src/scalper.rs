@@ -54,14 +54,14 @@ pub async fn grab(
             crate::structure::SelectorType::String => Value::String(value),
             crate::structure::SelectorType::Number => {
                 let number = any_string_to_number(&value);
-                let value: Value;
-                if number.is_nan() {
-                    value = Value::String("NaN".to_string());
+
+                let value: Value = if number.is_nan() {
+                    Value::String("NaN".to_string())
                 } else {
-                    value = Value::Number(Number::from_f64(number).expect(
-                        format!("failed to parse number for \"{}\"", &selector.name).as_str(),
-                    ))
-                }
+                    Value::Number(Number::from_f64(number).unwrap_or_else(|| {
+                        panic!("failed to parse number for \"{}\"", &selector.name)
+                    }))
+                };
                 value
             }
         };

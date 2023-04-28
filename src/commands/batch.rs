@@ -92,7 +92,7 @@ pub async fn command(args: Args) -> Result<()> {
         if args.params.is_some() {
             let params = args.params.unwrap();
             let resources_len = config.resources.len();
-            if params.len() == 0 {
+            if params.is_empty() {
                 return Err(anyhow!("You need to specify at least one parameter!"));
             }
 
