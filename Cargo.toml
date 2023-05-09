@@ -28,7 +28,7 @@ tokio = { version = "1.27.0", features = ["test-util", "macros", "rt-multi-threa
 validator = { version = "0.16.0", features = ["derive"] }
 reqwest = "0.11.16"
 scraper = "0.16.0"
-inquire = "0.6.1"
+inquire = "0.6.2"
 serde = { version = "1.0.162", features = ["derive"] }
 toml = "0.7.3"
 serde_json = "1.0.95"
