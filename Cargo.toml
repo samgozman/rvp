@@ -30,7 +30,7 @@ reqwest = "0.11.18"
 scraper = "0.16.0"
 inquire = "0.6.2"
 serde = { version = "1.0.164", features = ["derive"] }
-toml = "0.7.4"
+toml = "0.7.5"
 serde_json = "1.0.97"
 rand = "0.8.5"
 comfy-table = "6.2.0"
