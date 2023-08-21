@@ -27,7 +27,7 @@ paste = "1.0.14"
 tokio = { version = "1.29.1", features = ["test-util", "macros", "rt-multi-thread"] }
 validator = { version = "0.16.1", features = ["derive"] }
 reqwest = "0.11.18"
-scraper = "0.16.0"
+scraper = "0.17.1"
 inquire = "0.6.2"
 serde = { version = "1.0.183", features = ["derive"] }
 toml = "0.7.5"
