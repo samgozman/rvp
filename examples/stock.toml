@@ -5,7 +5,7 @@ description = "Gather stock information from different sources"
 url = "https://finviz.com/quote.ashx?t=%%"
 
 [[resources.selectors]]
-path = "body > div.content > div.ticker-wrapper tbody > tr > td > table.fullview-title > tbody > tr:nth-child(2) > td > a > b"
+path = "body > div.content > div.ticker-wrapper.gradient-fade > div.fv-container > table > tbody > tr > td > div > table:nth-child(1) > tbody > tr > td > table.fullview-title > tbody > tr.text-blue-500 > td > h1 > span > a > b"
 name = "Name"
 parsed_type = "String"
 
