@@ -4,7 +4,7 @@ use crate::structure::{
 use anyhow::Result;
 use clap::Parser;
 use rand::distributions::{Alphanumeric, DistString};
-use validator::validate_url;
+use validator::ValidateUrl;
 
 use inquire::{
     required,
@@ -114,7 +114,7 @@ fn add_resources() -> Result<Vec<Resource>> {
             .with_help_message(
                 format!("e.g. http://example.com?id={}", URL_PARAM_PLACEHOLDER).as_str(),
             )
-            .with_validator(|input: &str| match validate_url(input) {
+            .with_validator(|input: &str| match ValidateUrl::validate_url(input) {
                 true => Ok(Valid),
                 false => Ok(Invalid("must be a valid URL!".into())),
             })

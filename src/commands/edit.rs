@@ -10,7 +10,7 @@ use inquire::{
     validator::Validation::{Invalid, Valid},
     Confirm, Select, Text,
 };
-use validator::validate_url;
+use validator::ValidateUrl;
 
 /// Edit config file
 #[derive(Parser)]
@@ -48,7 +48,7 @@ pub async fn command(args: Args) -> Result<()> {
                     .with_help_message(
                         format!("e.g. http://example.com?id={}", URL_PARAM_PLACEHOLDER).as_str(),
                     )
-                    .with_validator(|input: &str| match validate_url(input) {
+                    .with_validator(|input: &str| match ValidateUrl::validate_url(input) {
                         true => Ok(Valid),
                         false => Ok(Invalid("must be a valid URL!".into())),
                     })

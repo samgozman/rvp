@@ -302,13 +302,13 @@ mod tests {
         assert_eq!(selectors.position(&s1), 1);
 
         // Test the Index trait
-        assert_eq!(selectors[&s0].name, selectors[0].name);
-        assert_eq!(selectors[&s1].path, selectors[1].path);
+        assert_eq!(selectors[0].name, selectors[0].name);
+        assert_eq!(selectors[1].path, selectors[1].path);
 
         // Test the IndexMut trait
-        let mut selectors = vec![s0.clone(), s1.clone()];
-        selectors[&s0].name = "test".to_string();
-        selectors[&s1].path = "test2".to_string();
+        let mut selectors = [s0.clone(), s1.clone()];
+        selectors[0].name = "test".to_string();
+        selectors[1].path = "test2".to_string();
     }
 
     #[test]
@@ -341,9 +341,9 @@ mod tests {
         );
 
         // Test the IndexMut trait
-        let mut resources = vec![r0.clone(), r1.clone()];
-        resources[&r0].url = "https://test.com/?id=%%".to_string();
-        resources[&r1].selectors[0].name = "test".to_string();
+        let mut resources = [r0.clone(), r1.clone()];
+        resources[0].url = "https://test.com/?id=%%".to_string();
+        resources[1].selectors[0].name = "test".to_string();
 
         // Test mut_url_with_param
         let mut r2 = r0.clone();

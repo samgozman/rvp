@@ -12,3 +12,6 @@ target/
 
 # IDE
 .idea/
+
+# System Files
+.DS_Store

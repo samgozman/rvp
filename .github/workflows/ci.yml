@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1.0.7
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.72.0
+          toolchain: 1.77.2
           components: rustfmt
 
       - name: Run rustfmt
@@ -30,10 +30,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1.0.7
+      - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
-          toolchain: 1.72.0
+          toolchain: 1.77.2
       - name: Run clippy
         run: cargo clippy --locked --all-targets --all-features --workspace -- -D warnings
         timeout-minutes: 10
@@ -48,10 +48,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1.0.7
+      - uses: dtolnay/rust-toolchain@stable
         with:
           name: test-${{matrix.os}}
-          toolchain: 1.72.0
+          toolchain: 1.77.2
 
       - name: Run unit tests
         run: cargo test --locked --all-targets --workspace --all-features
