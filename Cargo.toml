@@ -31,7 +31,7 @@ scraper = "0.19.0"
 inquire = "0.7.5"
 serde = { version = "1.0.199", features = ["derive"] }
 toml = "0.8.12"
-serde_json = "1.0.116"
+serde_json = "1.0.117"
 rand = "0.8.5"
 comfy-table = "7.1.1"
 regex = "1.10.4"
